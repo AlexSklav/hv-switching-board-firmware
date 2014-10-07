@@ -138,11 +138,9 @@ void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t v
   bitNotData ^= 0x0ff;
 
   cnt = 8;
-  if (bitOrder == LSBFIRST)
-  {
-    do
-    {
-      if ( val & 1 )
+  if (bitOrder == LSBFIRST) {
+    do {
+      if (val & 1)
 	*outData |= bitData;
       else
 	*outData &= bitNotData;
@@ -152,16 +150,13 @@ void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t v
       val >>= 1;
       cnt--;
     } while( cnt != 0 );
-  }
-  else
-  {
-    do
-    {
-      if ( val & 128 )
+  } else {
+    do {
+      if (val & 128) {
 	*outData |= bitData;
-      else
+      } else {
 	*outData &= bitNotData;
-      
+      }
       *outClock |= bitClock;
       *outClock &= bitNotClock;
       val <<= 1;
