@@ -12,5 +12,5 @@
    DEFINE_TO_STRING(___HARDWARE_MAJOR_VERSION___.___HARDWARE_MINOR_VERSION___)
 #endif
 #ifndef ___SOFTWARE_VERSION___
-  #define ___SOFTWARE_VERSION___ "0.1.1"
+  #define ___SOFTWARE_VERSION___ "0.1.2"
 #endif

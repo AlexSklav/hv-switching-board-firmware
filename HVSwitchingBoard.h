@@ -19,6 +19,8 @@ public:
   HVSwitchingBoardClass();
   void begin();
   void process_wire_command();
+protected:
+  bool supports_isp() { return true; }
 private:
   void update_all_channels();
   uint8_t state_of_channels_[5];
