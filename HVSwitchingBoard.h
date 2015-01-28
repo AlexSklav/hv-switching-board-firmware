@@ -18,7 +18,6 @@ public:
 
   HVSwitchingBoardClass();
   void begin();
-  void listen();
   void process_wire_command();
 private:
   void update_all_channels();

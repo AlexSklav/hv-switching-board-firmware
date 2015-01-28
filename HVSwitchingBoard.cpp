@@ -18,15 +18,15 @@ HVSwitchingBoardClass::HVSwitchingBoardClass() {
 }
 
 void HVSwitchingBoardClass::process_wire_command() {
-  send_payload_length_ = false;
   return_code_ = RETURN_OK;
+  uint8_t cmd = cmd_ & B00111111;
   bool auto_increment = (1 << 7) & cmd_;
-  cmd_ = cmd_ & B00111111;
   uint8_t port;
-  
-  if ( (cmd_ >= PCA9505_CONFIG_IO_REGISTER_) && 
-       (cmd_ <= PCA9505_CONFIG_IO_REGISTER_ + 4) ) {
-    port = cmd_ - PCA9505_CONFIG_IO_REGISTER_;
+
+  if ( (cmd >= PCA9505_CONFIG_IO_REGISTER_) && 
+       (cmd <= PCA9505_CONFIG_IO_REGISTER_ + 4) ) {
+    send_payload_length_ = false;
+    port = cmd - PCA9505_CONFIG_IO_REGISTER_;
     if (payload_length_ == 0) {
       serialize(&config_io_register_[port], 1);
     } else if (payload_length_ == 1) {
@@ -40,9 +40,10 @@ void HVSwitchingBoardClass::process_wire_command() {
     } else {
       return_code_ = RETURN_GENERAL_ERROR;
     }
-  } else if ( (cmd_ >= PCA9505_OUTPUT_PORT_REGISTER_) && 
-       (cmd_ <= PCA9505_OUTPUT_PORT_REGISTER_ + 4) ) {
-    port = cmd_ - PCA9505_OUTPUT_PORT_REGISTER_;
+  } else if ( (cmd >= PCA9505_OUTPUT_PORT_REGISTER_) && 
+       (cmd <= PCA9505_OUTPUT_PORT_REGISTER_ + 4) ) {
+    send_payload_length_ = false;
+    port = cmd - PCA9505_OUTPUT_PORT_REGISTER_;
     if (payload_length_ == 0) {
       serialize(&state_of_channels_[port], 1);
     } else if (payload_length_ == 1) {
@@ -88,34 +89,6 @@ void HVSwitchingBoardClass::begin() {
   // initialize channel state
   memset(state_of_channels_, 0, 5);
   update_all_channels();
-}
-
-/* Process any available requests on the serial port, or through Wire/I2C. */
-void HVSwitchingBoardClass::listen() {
-  if (read_serial_command()) {
-    // A new-line-terminated command was successfully read into the buffer.
-    // Call `ProcessSerialInput` to handle process command string.
-    if (!process_serial_input()) {
-      error(RETURN_UNKNOWN_COMMAND);
-    }
-  }
-  if (wire_command_received_) {
-    bytes_written_ = 0;
-    bytes_read_ = 0;
-    //send_payload_length_ = true;
-    return_code_ = RETURN_GENERAL_ERROR;
-    process_wire_command();
-    //serialize(&return_code_, sizeof(return_code_));
-    wire_command_received_ = false;
-
-    // If this command is changing the programming mode, wait for
-    // a specified delay before setting/resetting the latch; otherwise,
-    // the i2c communication will interfere.
-    if (cmd_ == CMD_SET_PROGRAMMING_MODE) {
-      delay(1000);
-      update_programming_mode_state();
-    }
-  }
 }
 
 void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val)
