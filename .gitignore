@@ -1,1 +1,6 @@
 Config.h
+.sconsign.dblite
+build/
+*.pyc
+*.o
+*/firmware
