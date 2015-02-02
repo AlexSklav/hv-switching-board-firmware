@@ -30,7 +30,8 @@ void HVSwitchingBoardClass::begin() {
   digitalWrite(OE, LOW);
 
   // initialize channel state
-  memset(state_of_channels_, 0, 5);
+  // Note: high bit means that the channel is off
+  memset(state_of_channels_, 255, 5);
   update_all_channels();
 }
 
