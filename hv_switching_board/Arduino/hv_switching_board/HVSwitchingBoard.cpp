@@ -35,13 +35,14 @@ void HVSwitchingBoardClass::begin() {
 }
 
 void HVSwitchingBoardClass::process_wire_command() {
-  return_code_ = RETURN_OK;
+  return_code_ = RETURN_UNKNOWN_COMMAND;
   uint8_t cmd = cmd_ & B00111111;
   bool auto_increment = (1 << 7) & cmd_;
   uint8_t port;
 
   if ( (cmd >= PCA9505_CONFIG_IO_REGISTER_) && 
        (cmd <= PCA9505_CONFIG_IO_REGISTER_ + 4) ) {
+    return_code_ = RETURN_OK;
     send_payload_length_ = false;
     port = cmd - PCA9505_CONFIG_IO_REGISTER_;
     if (payload_length_ == 0) {
@@ -59,6 +60,7 @@ void HVSwitchingBoardClass::process_wire_command() {
     }
   } else if ( (cmd >= PCA9505_OUTPUT_PORT_REGISTER_) && 
        (cmd <= PCA9505_OUTPUT_PORT_REGISTER_ + 4) ) {
+    return_code_ = RETURN_OK;
     send_payload_length_ = false;
     port = cmd - PCA9505_OUTPUT_PORT_REGISTER_;
     if (payload_length_ == 0) {
@@ -94,6 +96,7 @@ bool HVSwitchingBoardClass::process_serial_input() {
     }
     return true;
   }
+  return false;
 }
 
 void HVSwitchingBoardClass::update_all_channels() {
