@@ -30,7 +30,7 @@ setup(name='wheeler.hv_switching_board',
       license='GPLv2',
       packages=['hv_switching_board'],
       package_data=hv_switching_board_files,
-      install_requires=['wheeler.base_node'])
+      install_requires=['wheeler.base_node>=0.2.post2'])
 
 
 @task
