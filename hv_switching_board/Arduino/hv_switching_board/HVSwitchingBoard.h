@@ -19,6 +19,7 @@ public:
   HVSwitchingBoardClass();
   void begin();
   void process_wire_command();
+  bool process_serial_input();
 protected:
   bool supports_isp() { return true; }
 private:

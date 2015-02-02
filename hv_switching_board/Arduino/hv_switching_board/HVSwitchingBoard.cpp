@@ -17,6 +17,23 @@ const char BaseNode::URL_[] PROGMEM = "http://microfluidics.utoronto.ca/dropbot"
 HVSwitchingBoardClass::HVSwitchingBoardClass() {
 }
 
+void HVSwitchingBoardClass::begin() {
+  BaseNode::begin();
+  
+  pinMode(S_SS, OUTPUT);
+  pinMode(S_SCK, OUTPUT);
+  pinMode(S_MOSI, OUTPUT);
+  pinMode(OE, OUTPUT);
+  pinMode(SRCLR, OUTPUT);
+
+  digitalWrite(SRCLR, HIGH);
+  digitalWrite(OE, LOW);
+
+  // initialize channel state
+  memset(state_of_channels_, 0, 5);
+  update_all_channels();
+}
+
 void HVSwitchingBoardClass::process_wire_command() {
   return_code_ = RETURN_OK;
   uint8_t cmd = cmd_ & B00111111;
@@ -66,29 +83,25 @@ void HVSwitchingBoardClass::process_wire_command() {
   }
 }
 
+bool HVSwitchingBoardClass::process_serial_input() {
+  if (BaseNode::process_serial_input()) {
+    return true;
+  }
+  
+  if (match_function(P("state_of_all_channels()"))) {
+    for (uint8_t i = 0; i < 5; i++) {
+      Serial.println("state_of_channels_[" + String(i) + "]=" + String(state_of_channels_[i]));
+    }
+    return true;
+  }
+}
+
 void HVSwitchingBoardClass::update_all_channels() {
   digitalWrite(S_SS, LOW);
   for (uint8_t i = 0; i < 5; i++) {
     shiftOutFast(S_MOSI, S_SCK, MSBFIRST, ~state_of_channels_[4-i]);
   }
   digitalWrite(S_SS,  HIGH);
-}
-
-void HVSwitchingBoardClass::begin() {
-  BaseNode::begin();
-  
-  pinMode(S_SS, OUTPUT);
-  pinMode(S_SCK, OUTPUT);
-  pinMode(S_MOSI, OUTPUT);
-  pinMode(OE, OUTPUT);
-  pinMode(SRCLR, OUTPUT);
-
-  digitalWrite(SRCLR, HIGH);
-  digitalWrite(OE, LOW);
-
-  // initialize channel state
-  memset(state_of_channels_, 0, 5);
-  update_all_channels();
 }
 
 void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val)
