@@ -33,7 +33,7 @@ def get_includes():
         ...
 
     '''
-    return get_sketch_directory()
+    return [get_sketch_directory()]
 
 
 def get_sources():

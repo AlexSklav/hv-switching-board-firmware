@@ -3,6 +3,7 @@
 import re
 
 from arduino_build import ArduinoBuildContext
+import base_node
 import hv_switching_board
 
 
@@ -10,9 +11,11 @@ Import('SOFTWARE_VERSION')
 Import('sketch_build_root')
 
 context = ArduinoBuildContext(ARGUMENTS, build_root=sketch_build_root)
-arduino_hex = context.build(extra_sources=hv_switching_board.get_sources(),
+arduino_hex = context.build(extra_sources=base_node.get_sources() +
+                            hv_switching_board.get_sources(),
                             register_upload=True,
                             env_dict={'CPPPATH':
+                                      base_node.get_includes() +
                                       hv_switching_board.get_includes(),
                                       'CPPDEFINES': {'___SOFTWARE_VERSION___':
                                       '\\"%s\\"' % SOFTWARE_VERSION}})
