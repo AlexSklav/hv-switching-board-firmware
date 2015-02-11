@@ -13,7 +13,6 @@ import version
 # `hv_switching_board` functions for discovering, e.g., the path to the Arduino
 # firmware sketch source files.
 sys.path.append(path('.').abspath())
-import hv_switching_board
 
 hv_switching_board_files = find_package_data(package='hv_switching_board',
                                              where='hv_switching_board',
@@ -35,6 +34,7 @@ setup(name='wheeler.hv_switching_board',
 
 @task
 def create_config():
+    import hv_switching_board
     sketch_directory = path(hv_switching_board.get_sketch_directory())
     sketch_directory.joinpath('Config.h.skeleton').copy(sketch_directory
                                                         .joinpath('Config.h'))
