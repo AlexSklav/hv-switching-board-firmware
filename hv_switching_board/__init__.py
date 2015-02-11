@@ -33,7 +33,8 @@ def get_includes():
         ...
 
     '''
-    return [get_sketch_directory()]
+    import base_node
+    return [get_sketch_directory()] + base_node.get_includes()
 
 
 def get_sources():
@@ -54,7 +55,10 @@ def get_sources():
         ...
 
     '''
-    return get_sketch_directory().files('*.c*')
+    sources = []
+    for p in get_includes():
+        sources += path(p).files('*.c*')
+    return sources
 
 
 def get_firmwares():
