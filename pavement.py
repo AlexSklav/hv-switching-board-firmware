@@ -14,11 +14,6 @@ import version
 # firmware sketch source files.
 sys.path.append(path('.').abspath())
 
-hv_switching_board_files = find_package_data(package='hv_switching_board',
-                                             where='hv_switching_board',
-                                             only_in_packages=False)
-pprint(hv_switching_board_files)
-
 setup(name='wheeler.hv-switching-board',
       version=version.getVersion(),
       description='Arduino-based high-voltage switching board firmware and '
@@ -28,7 +23,6 @@ setup(name='wheeler.hv-switching-board',
       url='http://microfluidics.utoronto.ca/git/firmware___hv_switching_board.git',
       license='GPLv2',
       packages=['hv_switching_board'],
-      package_data=hv_switching_board_files,
       install_requires=['wheeler.base-node>=0.3'])
 
 
