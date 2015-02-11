@@ -19,7 +19,7 @@ hv_switching_board_files = find_package_data(package='hv_switching_board',
                                              only_in_packages=False)
 pprint(hv_switching_board_files)
 
-setup(name='wheeler.hv_switching_board',
+setup(name='wheeler.hv-switching-board',
       version=version.getVersion(),
       description='Arduino-based high-voltage switching board firmware and '
       'Python API.',
