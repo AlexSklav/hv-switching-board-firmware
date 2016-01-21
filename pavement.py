@@ -17,10 +17,10 @@ sys.path.append(path('.').abspath())
 setup(name='wheeler.hv-switching-board',
       version=version.getVersion(),
       description='Arduino-based high-voltage switching board firmware and '
-      'Python API.',
+                  'Python API.',
       author='Ryan Fobel',
       author_email='ryan@fobel.net',
-      url='http://microfluidics.utoronto.ca/git/firmware___hv_switching_board.git',
+      url='https://github.com/wheeler-microfluidics/hv-switching-board-firmware',
       license='GPLv2',
       packages=['hv_switching_board'],
       install_requires=['wheeler.base-node>=0.3'])
