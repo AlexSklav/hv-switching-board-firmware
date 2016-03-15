@@ -23,7 +23,7 @@ setup(name='wheeler.hv-switching-board',
       url='https://github.com/wheeler-microfluidics/hv-switching-board-firmware',
       license='GPLv2',
       packages=['hv_switching_board'],
-      install_requires=['wheeler.base-node>=0.3'])
+      install_requires=['wheeler.base-node>=0.4'])
 
 
 @task

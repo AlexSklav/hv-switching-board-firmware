@@ -9,3 +9,5 @@ build/
 */firmware
 *.egg-info
 paver-minilib.zip
+.idea
+
