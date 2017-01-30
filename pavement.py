@@ -36,9 +36,13 @@ def create_config():
 
 @task
 @needs('create_config')
-@cmdopts([('sconsflags=', 'f', 'Flags to pass to SCons.')])
 def build_firmware():
-    sh('scons %s' % getattr(options, 'sconsflags', ''))
+    sh('pio run')
+
+
+@task
+def upload():
+    sh('pio run --target upload --target nobuild')
 
 
 @task
