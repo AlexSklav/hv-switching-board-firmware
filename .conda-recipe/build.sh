@@ -6,7 +6,7 @@ mkdir -p "${PREFIX}"/bin/platformio/hv-switching-board/pro8MHzatmega328
 rc=$?; if [[ $rc != 0  ]]; then exit $rc; fi
 
 # Copy Arduino library to Conda include directory
-cp -ra "${SRC_DIR}"/lib/HvSwitchingBoard "${PREFIX}"/include/Arduino/HvSwitchingBoard
+cp -ra "${SRC_DIR}"/lib/HVSwitchingBoard "${PREFIX}"/include/Arduino/HVSwitchingBoard
 # Copy compiled firmware to Conda bin directory
 cp -a "${SRC_DIR}"/platformio.ini "${PREFIX}"/bin/hv-switching-board
 cp -a "${SRC_DIR}"/.pioenvs/pro8MHzatmega328/firmware.hex "${PREFIX}"/bin/hv-switching-board/pro8MHzatmega328/firmware.hex
