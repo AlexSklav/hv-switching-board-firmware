@@ -14,14 +14,14 @@ import version
 # firmware sketch source files.
 sys.path.append(path('.').abspath())
 
-setup(name='wheeler.hv-switching-board',
+setup(name='hv-switching-board',
       version=version.getVersion(),
       description='Arduino-based high-voltage switching board firmware and '
                   'Python API.',
-      author='Ryan Fobel',
-      author_email='ryan@fobel.net',
+      author='Ryan Fobel and Christian Fobel',
+      author_email='ryan@fobel.net and christian@fobel.net',
       url='https://github.com/wheeler-microfluidics/hv-switching-board-firmware',
-      license='GPLv2',
+      license='MIT',
       packages=['hv_switching_board'],
       install_requires=['wheeler.base-node>=0.4'])
 
