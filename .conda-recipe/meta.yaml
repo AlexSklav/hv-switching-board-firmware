@@ -1,0 +1,57 @@
+# source will be downloaded prior to filling in jinja templates
+# Example assumes that this folder has setup.py in it
+source:
+  git_url: ../
+
+package:
+  name: hv-switching-board
+{% if GIT_DESCRIBE_NUMBER > '0' %}
+  version: {{ GIT_DESCRIBE_TAG[1:] }}.{{ GIT_DESCRIBE_NUMBER }}
+{% else %}
+  version: {{ GIT_DESCRIBE_TAG[1:] }}.0
+{% endif %}
+
+requirements:
+  build:
+    - arduino-linked-list >=1.2.3
+    - arduino-memory
+    - arduino-slow-soft-wire
+    - base-node >=0.7
+    - future
+    - nanopb-helpers >=0.6
+    - paver
+    - pip
+    - platformio-framework-arduinoavr >=1.136.0
+    - platformio-helpers >=0.2
+    - platformio-tool-scons
+    - platformio-toolchain-atmelavr
+    - pytables
+    - python 2.7*
+    - serial-device >=0.7
+
+  run:
+    - arduino-linked-list >=1.2.3
+    - arduino-memory
+    - arduino-slow-soft-wire
+    - base-node >=0.7
+    - future
+    - nanopb-helpers >=0.6
+    - paver
+    - pip
+    - platformio-framework-arduinoavr >=1.136.0
+    - platformio-helpers >=0.2
+    - platformio-tool-scons
+    - platformio-toolchain-atmelavr
+    - pytables
+    - python 2.7*
+    - serial-device >=0.7
+
+test:
+  imports:
+    - hv_switching_board
+  commands:
+    - python -m hv_switching_board.bin.upload -h
+
+about:
+  home: https://github.com/wheeler-microfluidics/hv-switching-board
+  license: MIT

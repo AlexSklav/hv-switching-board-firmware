@@ -17,7 +17,7 @@ public:
   static const uint8_t S_MOSI = 5;
 
   HVSwitchingBoardClass();
-  void begin();
+  void begin(uint32_t baud_rate);
   void process_wire_command();
   bool process_serial_input();
 protected:

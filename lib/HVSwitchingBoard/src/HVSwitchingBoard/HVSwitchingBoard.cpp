@@ -17,9 +17,9 @@ const char BaseNode::URL_[] PROGMEM = "http://microfluidics.utoronto.ca/dropbot"
 HVSwitchingBoardClass::HVSwitchingBoardClass() {
 }
 
-void HVSwitchingBoardClass::begin() {
-  BaseNode::begin();
-  
+void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
+  BaseNode::begin(baud_rate);
+
   pinMode(S_SS, OUTPUT);
   pinMode(S_SCK, OUTPUT);
   pinMode(S_MOSI, OUTPUT);
@@ -41,7 +41,7 @@ void HVSwitchingBoardClass::process_wire_command() {
   bool auto_increment = (1 << 7) & cmd_;
   uint8_t port;
 
-  if ( (cmd >= PCA9505_CONFIG_IO_REGISTER_) && 
+  if ( (cmd >= PCA9505_CONFIG_IO_REGISTER_) &&
        (cmd <= PCA9505_CONFIG_IO_REGISTER_ + 4) ) {
     return_code_ = RETURN_OK;
     send_payload_length_ = false;
@@ -59,7 +59,7 @@ void HVSwitchingBoardClass::process_wire_command() {
     } else {
       return_code_ = RETURN_GENERAL_ERROR;
     }
-  } else if ( (cmd >= PCA9505_OUTPUT_PORT_REGISTER_) && 
+  } else if ( (cmd >= PCA9505_OUTPUT_PORT_REGISTER_) &&
        (cmd <= PCA9505_OUTPUT_PORT_REGISTER_ + 4) ) {
     return_code_ = RETURN_OK;
     send_payload_length_ = false;
@@ -90,7 +90,7 @@ bool HVSwitchingBoardClass::process_serial_input() {
   if (BaseNode::process_serial_input()) {
     return true;
   }
-  
+
   if (match_function(P("state_of_all_channels()"))) {
     for (uint8_t i = 0; i < 5; i++) {
       Serial.println("state_of_channels_[" + String(i) + "]=" + String(state_of_channels_[i]));
@@ -115,7 +115,7 @@ void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t v
   uint8_t bitClock, bitNotClock;
   volatile uint8_t *outData;
   volatile uint8_t *outClock;
- 
+
   outData = portOutputRegister(digitalPinToPort(dataPin));
   outClock = portOutputRegister(digitalPinToPort(clockPin));
   bitData = digitalPinToBitMask(dataPin);
@@ -134,7 +134,7 @@ void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t v
 	*outData |= bitData;
       else
 	*outData &= bitNotData;
-      
+
       *outClock |= bitClock;
       *outClock &= bitNotClock;
       val >>= 1;
@@ -152,5 +152,5 @@ void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t v
       val <<= 1;
       cnt--;
     } while( cnt != 0 );
-  } 
+  }
 }

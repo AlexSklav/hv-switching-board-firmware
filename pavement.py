@@ -14,31 +14,36 @@ import version
 # firmware sketch source files.
 sys.path.append(path('.').abspath())
 
-setup(name='wheeler.hv-switching-board',
+setup(name='hv-switching-board',
       version=version.getVersion(),
       description='Arduino-based high-voltage switching board firmware and '
                   'Python API.',
-      author='Ryan Fobel',
-      author_email='ryan@fobel.net',
+      author='Ryan Fobel and Christian Fobel',
+      author_email='ryan@fobel.net and christian@fobel.net',
       url='https://github.com/wheeler-microfluidics/hv-switching-board-firmware',
-      license='GPLv2',
-      packages=['hv_switching_board'],
+      license='MIT',
+      packages=['hv_switching_board', 'hv_switching_board.bin'],
       install_requires=['wheeler.base-node>=0.4'])
 
 
 @task
 def create_config():
     import hv_switching_board
+    lib_directory = path(hv_switching_board.get_lib_directory())
     sketch_directory = path(hv_switching_board.get_sketch_directory())
-    sketch_directory.joinpath('Config.h.skeleton').copy(sketch_directory
-                                                        .joinpath('Config.h'))
+    (sketch_directory.joinpath('Config.h.skeleton')
+     .copy(lib_directory.joinpath('src', 'HVSwitchingBoard', 'Config.h')))
 
 
 @task
 @needs('create_config')
-@cmdopts([('sconsflags=', 'f', 'Flags to pass to SCons.')])
 def build_firmware():
-    sh('scons %s' % getattr(options, 'sconsflags', ''))
+    sh('pio run')
+
+
+@task
+def upload():
+    sh('pio run --target upload --target nobuild')
 
 
 @task

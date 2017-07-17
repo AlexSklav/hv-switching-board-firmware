@@ -11,7 +11,14 @@ def get_sketch_directory():
     '''
     Return directory containing the `hv_switching_board` Arduino sketch.
     '''
-    return package_path().joinpath('Arduino', 'hv_switching_board')
+    return package_path().joinpath('..', 'src').realpath()
+
+
+def get_lib_directory():
+    '''
+    Return directory containing the `HVSwitchingBoard` Arduino library.
+    '''
+    return package_path().joinpath('..', 'lib', 'HVSwitchingBoard').realpath()
 
 
 def get_includes():
