@@ -1,5 +1,6 @@
 mkdir -p "${PREFIX}"/include/Arduino
-mkdir -p "${PREFIX}"/bin/platformio/hv-switching-board/pro8MHzatmega328
+mkdir -p "${PREFIX}"/bin/platformio/hv-switching-board/v2_1
+mkdir -p "${PREFIX}"/bin/platformio/hv-switching-board/v3_1
 
 # Build firmware
 "${PYTHON}" -m paver build_firmware
@@ -9,7 +10,8 @@ rc=$?; if [[ $rc != 0  ]]; then exit $rc; fi
 cp -ra "${SRC_DIR}"/lib/HVSwitchingBoard "${PREFIX}"/include/Arduino/HVSwitchingBoard
 # Copy compiled firmware to Conda bin directory
 cp -a "${SRC_DIR}"/platformio.ini "${PREFIX}"/bin/hv-switching-board
-cp -a "${SRC_DIR}"/.pioenvs/pro8MHzatmega328/firmware.hex "${PREFIX}"/bin/hv-switching-board/pro8MHzatmega328/firmware.hex
+cp -a "${SRC_DIR}"/.pioenvs/v2_1/firmware.hex "${PREFIX}"/bin/hv-switching-board/v2_1/firmware.hex
+cp -a "${SRC_DIR}"/.pioenvs/v3_1/firmware.hex "${PREFIX}"/bin/hv-switching-board/v3_1/firmware.hex
 rc=$?; if [[ $rc != 0  ]]; then exit $rc; fi
 
 # Generate `setup.py` from `pavement.py` definition.
