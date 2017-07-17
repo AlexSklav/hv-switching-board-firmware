@@ -49,6 +49,8 @@ requirements:
 test:
   imports:
     - hv_switching_board
+  commands:
+    - python -m hv_switching_board.bin.upload -h
 
 about:
   home: https://github.com/wheeler-microfluidics/hv-switching-board

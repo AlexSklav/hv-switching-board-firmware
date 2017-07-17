@@ -1,10 +1,11 @@
-from arduino_helpers.upload import upload, parse_args
-
-from .. import get_firmwares
+from platformio_helpers.upload import upload_conda, parse_args
 
 
 if __name__ == '__main__':
-    args = parse_args()
+    from argparse import ArgumentParser
 
-    print upload(args.board_name, lambda b: get_firmwares()[0], args.port,
-                 args.arduino_install_home, verify=not args.skip_verify)
+    parser = ArgumentParser(description='Upload firmware to board.')
+    parser.add_argument('-p', '--port', default=None)
+    args = parser.parse_args()
+    extra_args = None if args.port is None else ['--port', args.port]
+    print upload_conda('hv-switching-board', extra_args=extra_args)

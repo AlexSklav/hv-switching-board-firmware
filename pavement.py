@@ -22,7 +22,7 @@ setup(name='hv-switching-board',
       author_email='ryan@fobel.net and christian@fobel.net',
       url='https://github.com/wheeler-microfluidics/hv-switching-board-firmware',
       license='MIT',
-      packages=['hv_switching_board'],
+      packages=['hv_switching_board', 'hv_switching_board.bin'],
       install_requires=['wheeler.base-node>=0.4'])
 
 
