@@ -3,6 +3,7 @@ from base_node import BaseNode
 
 CMD_SET_STATE_OF_ALL_CHANNELS = 0xA0
 CMD_GET_STATE_OF_ALL_CHANNELS = 0xA1
+CMD_REBOOT = 0xA2
 
 
 class HVSwitchingBoard(BaseNode):

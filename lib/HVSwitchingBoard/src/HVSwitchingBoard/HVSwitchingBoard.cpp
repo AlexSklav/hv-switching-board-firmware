@@ -36,6 +36,10 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
 }
 
 void HVSwitchingBoardClass::process_wire_command() {
+  /*
+   * .. versionchanged:: 0.8
+   *    Add reboot command.
+   */
   return_code_ = RETURN_UNKNOWN_COMMAND;
   uint8_t cmd = cmd_ & B00111111;
   bool auto_increment = (1 << 7) & cmd_;
@@ -79,14 +83,27 @@ void HVSwitchingBoardClass::process_wire_command() {
     } else {
       return_code_ = RETURN_GENERAL_ERROR;
     }
-  // emulate the PCA9505 config io registers (used by the control board to determine
-  // the chip type)
+  } else if (cmd_ == CMD_REBOOT) {
+    // Reboot.
+    Serial.println("Rebooting...");
+    do {
+      wdt_enable(WDTO_15MS);
+      for(;;)
+      {
+      }
+    } while(0);
   } else {
+    // emulate the PCA9505 config io registers (used by the control board to
+    // determine the chip type)
     BaseNode::process_wire_command();
   }
 }
 
 bool HVSwitchingBoardClass::process_serial_input() {
+  /*
+   * .. versionchanged:: 0.8
+   *    Add ``reboot()`` serial command.
+   */
   if (BaseNode::process_serial_input()) {
     return true;
   }
@@ -96,6 +113,14 @@ bool HVSwitchingBoardClass::process_serial_input() {
       Serial.println("state_of_channels_[" + String(i) + "]=" + String(state_of_channels_[i]));
     }
     return true;
+  } else if (match_function(P("reboot()"))) {
+    Serial.println("Rebooting...");
+    do {
+      wdt_enable(WDTO_15MS);
+      for(;;)
+      {
+      }
+    } while(0);
   }
   return false;
 }

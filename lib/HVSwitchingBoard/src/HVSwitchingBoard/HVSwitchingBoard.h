@@ -1,6 +1,7 @@
 #ifndef ___HV_SWITCHING_BOARD__H___
 #define ___HV_SWITCHING_BOARD__H___
 
+#include <avr/wdt.h>
 #include <BaseNode.h>
 
 class HVSwitchingBoardClass : public BaseNode {
@@ -8,6 +9,8 @@ public:
   // PCA9505 (gpio) chip/register addresses (for emulation)
   static const uint8_t PCA9505_CONFIG_IO_REGISTER_ = 0x18;
   static const uint8_t PCA9505_OUTPUT_PORT_REGISTER_ = 0x08;
+
+  static const uint8_t CMD_REBOOT = 0xA2;
 
   // digital pins
   static const uint8_t OE = 8;

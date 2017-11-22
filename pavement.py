@@ -1,9 +1,10 @@
+from collections import OrderedDict
 import os
 import sys
-from pprint import pprint
 
-from paver.easy import task, needs, path, sh, cmdopts, options
-from paver.setuputils import setup, find_package_data
+from base_node_rpc.pavement_base import develop_link, develop_unlink
+from paver.easy import task, needs, path, sh, options
+import base_node_rpc
 
 # add the current directory as the first listing on the python path
 # so that we import the correct version.py
@@ -14,16 +15,26 @@ import version
 # firmware sketch source files.
 sys.path.append(path('.').abspath())
 
-setup(name='hv-switching-board',
-      version=version.getVersion(),
-      description='Arduino-based high-voltage switching board firmware and '
-                  'Python API.',
-      author='Ryan Fobel and Christian Fobel',
-      author_email='ryan@fobel.net and christian@fobel.net',
-      url='https://github.com/wheeler-microfluidics/hv-switching-board-firmware',
-      license='MIT',
-      packages=['hv_switching_board', 'hv_switching_board.bin'],
-      install_requires=['wheeler.base-node>=0.4'])
+
+PROPERTIES = OrderedDict([('base_node_software_version',
+                           base_node_rpc.__version__),
+                          ('package_name', 'hv-switching-board'),
+                          ('software_version', version.getVersion()),
+                          ('url', 'https://github.com/wheeler-microfluidics/'
+                           'hv-switching-board-firmware')])
+
+options(
+    PROPERTIES=PROPERTIES,
+    setup=dict(name=PROPERTIES['package_name'],
+               version=PROPERTIES['software_version'],
+               description='Arduino-based high-voltage switching board '
+               'firmware and Python API.',
+               author='Ryan Fobel and Christian Fobel',
+               author_email='ryan@fobel.net and christian@fobel.net',
+               url=PROPERTIES['url'],
+               license='MIT',
+               packages=['hv_switching_board', 'hv_switching_board.bin'],
+               install_requires=['wheeler.base-node>=0.4']))
 
 
 @task
