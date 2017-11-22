@@ -105,6 +105,8 @@ void HVSwitchingBoardClass::process_wire_command() {
       {
       }
     } while(0);
+  } else if (cmd_ == CMD_RESET_CONFIG) {
+    load_config(true);
   } else {
     // emulate the PCA9505 config io registers (used by the control board to
     // determine the chip type)

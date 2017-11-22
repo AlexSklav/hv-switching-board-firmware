@@ -30,6 +30,7 @@ public:
   static const uint8_t PCA9505_OUTPUT_PORT_REGISTER_ = 0x08;
 
   static const uint8_t CMD_REBOOT = 0xA2;
+  static const uint8_t CMD_RESET_CONFIG = 0xA3;
 
   // digital pins
   static const uint8_t OE = 8;
