@@ -4,6 +4,7 @@ import sys
 
 from base_node_rpc.pavement_base import develop_link, develop_unlink
 from paver.easy import task, needs, path, sh, options
+from paver.setuputils import install_distutils_tasks
 import base_node_rpc
 
 # add the current directory as the first listing on the python path
@@ -14,6 +15,8 @@ import version
 # `hv_switching_board` functions for discovering, e.g., the path to the Arduino
 # firmware sketch source files.
 sys.path.append(path('.').abspath())
+
+install_distutils_tasks()
 
 
 PROPERTIES = OrderedDict([('base_node_software_version',
