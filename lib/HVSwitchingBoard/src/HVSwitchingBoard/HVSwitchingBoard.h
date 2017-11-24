@@ -4,6 +4,17 @@
 #include <avr/wdt.h>
 #include <BaseNode.h>
 
+#ifndef HV_SWITCHING_BOARD_BAUD_RATE
+/*
+ * .. note::
+ *     ATMEGA328 running with **8 MHz clock** **MUST** use baud rate 57600 **at
+ *     most**.
+ *
+ *    For example, **115200 baud rate** does **not** work **8 MHz clock**.
+ */
+#define HV_SWITCHING_BOARD_BAUD_RATE 57600
+#endif
+
 class HVSwitchingBoardClass : public BaseNode {
 public:
   // PCA9505 (gpio) chip/register addresses (for emulation)
@@ -21,6 +32,7 @@ public:
 
   HVSwitchingBoardClass();
   void begin(uint32_t baud_rate);
+  void begin() { begin(HV_SWITCHING_BOARD_BAUD_RATE); }
   void process_wire_command();
   bool process_serial_input();
 protected:
