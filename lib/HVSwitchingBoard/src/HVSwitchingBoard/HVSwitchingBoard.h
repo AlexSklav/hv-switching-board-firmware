@@ -2,6 +2,10 @@
 #define ___HV_SWITCHING_BOARD__H___
 
 #include <avr/wdt.h>
+#if ___HARDWARE_MAJOR_VERSION___==3
+  // Version 3 hardware uses **hardware** SPI.
+#include <SPI.h>
+#endif
 #include <BaseNode.h>
 
 #ifndef HV_SWITCHING_BOARD_BAUD_RATE
@@ -26,9 +30,15 @@ public:
   // digital pins
   static const uint8_t OE = 8;
   static const uint8_t SRCLR = 9;
+#if ___HARDWARE_MAJOR_VERSION___==2
+  // Version 2 hardware uses **software** SPI.
   static const uint8_t S_SS = 3;
   static const uint8_t S_SCK = 4;
   static const uint8_t S_MOSI = 5;
+#elif ___HARDWARE_MAJOR_VERSION___==3
+  // Version 3 hardware uses **hardware** SPI.
+  static const uint8_t SS_595 = 3;
+#endif
 
   HVSwitchingBoardClass();
   void begin(uint32_t baud_rate);
