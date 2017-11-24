@@ -1,6 +1,9 @@
 /*
  * .. versionchanged:: 0.9
  *    Support both hardware major versions 2 and 3.
+ *
+ * .. versionchanged:: 0.10
+ *    Add command to reset configuration.
  */
 #ifndef ___HV_SWITCHING_BOARD__H___
 #define ___HV_SWITCHING_BOARD__H___
@@ -30,6 +33,7 @@ public:
   static const uint8_t PCA9505_OUTPUT_PORT_REGISTER_ = 0x08;
 
   static const uint8_t CMD_REBOOT = 0xA2;
+  static const uint8_t CMD_RESET_CONFIG = 0xA3;
 
   // digital pins
   static const uint8_t OE = 8;

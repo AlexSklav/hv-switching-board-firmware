@@ -52,6 +52,9 @@ void HVSwitchingBoardClass::process_wire_command() {
   /*
    * .. versionchanged:: 0.8
    *    Add reboot command.
+   *
+   * .. versionchanged:: 0.10
+   *    Add command to reset configuration.
    */
   return_code_ = RETURN_UNKNOWN_COMMAND;
   uint8_t cmd = cmd_ & B00111111;
@@ -105,6 +108,8 @@ void HVSwitchingBoardClass::process_wire_command() {
       {
       }
     } while(0);
+  } else if (cmd_ == CMD_RESET_CONFIG) {
+    load_config(true);
   } else {
     // emulate the PCA9505 config io registers (used by the control board to
     // determine the chip type)

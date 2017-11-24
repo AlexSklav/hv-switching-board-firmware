@@ -16,8 +16,10 @@ requirements:
     - arduino-linked-list >=1.2.3
     - arduino-memory
     - arduino-slow-soft-wire
-    - base-node >=0.8
-    - base-node-rpc >=0.29
+    # .. versionchanged:: 0.10
+    - base-node >=0.10.1
+    # .. versionchanged:: 0.10
+    - base-node-rpc >=0.33
     - future
     - nanopb-helpers >=0.6
     - paver
@@ -34,8 +36,10 @@ requirements:
     - arduino-linked-list >=1.2.3
     - arduino-memory
     - arduino-slow-soft-wire
-    - base-node >=0.8
-    - base-node-rpc >=0.29
+    # .. versionchanged:: 0.10
+    - base-node >=0.10.1
+    # .. versionchanged:: 0.10
+    - base-node-rpc >=0.33
     - future
     - nanopb-helpers >=0.6
     - paver
