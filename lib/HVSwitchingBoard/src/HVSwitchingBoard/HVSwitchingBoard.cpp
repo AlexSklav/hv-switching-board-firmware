@@ -14,15 +14,28 @@ const char BaseNode::HARDWARE_VERSION_[] PROGMEM = ___HARDWARE_VERSION___;
 const char BaseNode::SOFTWARE_VERSION_[] PROGMEM = ___SOFTWARE_VERSION___;
 const char BaseNode::URL_[] PROGMEM = "http://microfluidics.utoronto.ca/dropbot";
 
-HVSwitchingBoardClass::HVSwitchingBoardClass() {
-}
+HVSwitchingBoardClass::HVSwitchingBoardClass() {}
 
 void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
+  /*
+   * .. versionchanged:: 0.9
+   *    Support both hardware major versions 2 and 3.
+   */
   BaseNode::begin(baud_rate);
 
+#if ___HARDWARE_MAJOR_VERSION___==2
+  // Version 2 hardware uses **software** SPI.
   pinMode(S_SS, OUTPUT);
   pinMode(S_SCK, OUTPUT);
   pinMode(S_MOSI, OUTPUT);
+#elif ___HARDWARE_MAJOR_VERSION___==3
+  // Version 3 hardware uses **hardware** SPI.
+  pinMode(SS_595, OUTPUT);
+  digitalWrite(SS_595, HIGH);
+
+  // initialize SPI:
+  SPI.begin();
+#endif
   pinMode(OE, OUTPUT);
   pinMode(SRCLR, OUTPUT);
 
@@ -126,15 +139,37 @@ bool HVSwitchingBoardClass::process_serial_input() {
 }
 
 void HVSwitchingBoardClass::update_all_channels() {
-  digitalWrite(S_SS, LOW);
-  for (uint8_t i = 0; i < 5; i++) {
+  /*
+   * .. versionchanged:: 0.9
+   *    Support both hardware major versions 2 and 3.
+   */
+  const uint8_t port_count = 5;
+#if ___HARDWARE_MAJOR_VERSION___==2
+  // Version 2 hardware uses **software** SPI.
+  const uint8_t spi_chip_select_pin = S_SS;
+#elif ___HARDWARE_MAJOR_VERSION___==3
+  // Version 3 hardware uses **hardware** SPI.
+  const uint8_t spi_chip_select_pin = SS_595;
+#endif
+
+  // Select PCA9505 chips for SPI access.
+  digitalWrite(spi_chip_select_pin,  LOW);
+  // Copy cached channel states to outputs of PCA9505 chips.
+  for (uint8_t i = 0; i < port_count; i++) {
+#if ___HARDWARE_MAJOR_VERSION___==2
+  // Version 2 hardware uses **software** SPI.
     shiftOutFast(S_MOSI, S_SCK, MSBFIRST, ~state_of_channels_[4-i]);
+#elif ___HARDWARE_MAJOR_VERSION___==3
+  // Version 3 hardware uses **hardware** SPI.
+    SPI.transfer(~state_of_channels_[4-i]);
+#endif
   }
-  digitalWrite(S_SS,  HIGH);
+  // Release PCA9505 chips for SPI access.
+  digitalWrite(spi_chip_select_pin,  HIGH);
 }
 
-void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val)
-{
+void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder,
+                  uint8_t val) {
   uint8_t cnt;
   uint8_t bitData, bitNotData;
   uint8_t bitClock, bitNotClock;
@@ -156,9 +191,9 @@ void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t v
   if (bitOrder == LSBFIRST) {
     do {
       if (val & 1)
-	*outData |= bitData;
+  *outData |= bitData;
       else
-	*outData &= bitNotData;
+  *outData &= bitNotData;
 
       *outClock |= bitClock;
       *outClock &= bitNotClock;
@@ -168,9 +203,9 @@ void shiftOutFast(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t v
   } else {
     do {
       if (val & 128) {
-	*outData |= bitData;
+  *outData |= bitData;
       } else {
-	*outData &= bitNotData;
+  *outData &= bitNotData;
       }
       *outClock |= bitClock;
       *outClock &= bitNotClock;

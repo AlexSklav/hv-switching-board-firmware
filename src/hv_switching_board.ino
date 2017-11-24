@@ -15,9 +15,11 @@ void wdt_init(void) {
 
 
 void setup() {
-  // Use 57600 since 115200 does not seem to work on atmega328 running with 8
-  // MHz clock.
-  HVSwitchingBoard.begin(57600);
+  /*
+   * .. versionchanged:: 0.9
+   *    Use default baud rate, defined using ``HV_SWITCHING_BOARD_BAUD_RATE``.
+   */
+  HVSwitchingBoard.begin();
 }
 
 void loop() {

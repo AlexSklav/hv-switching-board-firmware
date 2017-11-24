@@ -1,8 +1,27 @@
+/*
+ * .. versionchanged:: 0.9
+ *    Support both hardware major versions 2 and 3.
+ */
 #ifndef ___HV_SWITCHING_BOARD__H___
 #define ___HV_SWITCHING_BOARD__H___
 
 #include <avr/wdt.h>
+#if ___HARDWARE_MAJOR_VERSION___==3
+  // Version 3 hardware uses **hardware** SPI.
+#include <SPI.h>
+#endif
 #include <BaseNode.h>
+
+#ifndef HV_SWITCHING_BOARD_BAUD_RATE
+/*
+ * .. note::
+ *     ATMEGA328 running with **8 MHz clock** **MUST** use baud rate 57600 **at
+ *     most**.
+ *
+ *    For example, **115200 baud rate** does **not** work **8 MHz clock**.
+ */
+#define HV_SWITCHING_BOARD_BAUD_RATE 57600
+#endif
 
 class HVSwitchingBoardClass : public BaseNode {
 public:
@@ -15,12 +34,19 @@ public:
   // digital pins
   static const uint8_t OE = 8;
   static const uint8_t SRCLR = 9;
+#if ___HARDWARE_MAJOR_VERSION___==2
+  // Version 2 hardware uses **software** SPI.
   static const uint8_t S_SS = 3;
   static const uint8_t S_SCK = 4;
   static const uint8_t S_MOSI = 5;
+#elif ___HARDWARE_MAJOR_VERSION___==3
+  // Version 3 hardware uses **hardware** SPI.
+  static const uint8_t SS_595 = 3;
+#endif
 
   HVSwitchingBoardClass();
   void begin(uint32_t baud_rate);
+  void begin() { begin(HV_SWITCHING_BOARD_BAUD_RATE); }
   void process_wire_command();
   bool process_serial_input();
 protected:
