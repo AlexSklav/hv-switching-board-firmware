@@ -1,3 +1,7 @@
+/*
+ * .. versionchanged:: 0.9
+ *    Support both hardware major versions 2 and 3.
+ */
 #ifndef ___HV_SWITCHING_BOARD__H___
 #define ___HV_SWITCHING_BOARD__H___
 

@@ -15,6 +15,10 @@ void wdt_init(void) {
 
 
 void setup() {
+  /*
+   * .. versionchanged:: 0.9
+   *    Use default baud rate, defined using ``HV_SWITCHING_BOARD_BAUD_RATE``.
+   */
   HVSwitchingBoard.begin();
 }
 

@@ -17,6 +17,10 @@ const char BaseNode::URL_[] PROGMEM = "http://microfluidics.utoronto.ca/dropbot"
 HVSwitchingBoardClass::HVSwitchingBoardClass() {}
 
 void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
+  /*
+   * .. versionchanged:: 0.9
+   *    Support both hardware major versions 2 and 3.
+   */
   BaseNode::begin(baud_rate);
 
 #if ___HARDWARE_MAJOR_VERSION___==2
@@ -135,6 +139,10 @@ bool HVSwitchingBoardClass::process_serial_input() {
 }
 
 void HVSwitchingBoardClass::update_all_channels() {
+  /*
+   * .. versionchanged:: 0.9
+   *    Support both hardware major versions 2 and 3.
+   */
   const uint8_t port_count = 5;
 #if ___HARDWARE_MAJOR_VERSION___==2
   // Version 2 hardware uses **software** SPI.
