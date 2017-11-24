@@ -52,6 +52,9 @@ void HVSwitchingBoardClass::process_wire_command() {
   /*
    * .. versionchanged:: 0.8
    *    Add reboot command.
+   *
+   * .. versionchanged:: 0.10
+   *    Add command to reset configuration.
    */
   return_code_ = RETURN_UNKNOWN_COMMAND;
   uint8_t cmd = cmd_ & B00111111;

@@ -52,6 +52,8 @@ class HVSwitchingBoard(BaseNode):
 
         .. warning::
             This resets the I2C address of the switching board to **10**.
+
+        .. versionadded:: 0.10
         '''
         self.proxy.i2c_write(self.address, [CMD_RESET_CONFIG])
         self.address = 10
