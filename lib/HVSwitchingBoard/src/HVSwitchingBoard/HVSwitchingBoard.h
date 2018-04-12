@@ -26,6 +26,15 @@
 #define HV_SWITCHING_BOARD_BAUD_RATE 57600
 #endif
 
+#ifndef HV_SWITCHING_BOARD_I2C_RATE
+/*
+ * Set default I2C rate to 400 kHz.
+ *
+ * See https://www.arduino.cc/en/Reference/WireSetClock for more info.
+ */
+#define HV_SWITCHING_BOARD_I2C_RATE 400000
+#endif
+
 class HVSwitchingBoardClass : public BaseNode {
 public:
   // PCA9505 (gpio) chip/register addresses (for emulation)

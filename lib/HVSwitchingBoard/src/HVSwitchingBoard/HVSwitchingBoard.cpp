@@ -46,6 +46,9 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
   // Note: high bit means that the channel is off
   memset(state_of_channels_, 255, 5);
   update_all_channels();
+
+  // set the i2c clock
+  Wire.setClock(HV_SWITCHING_BOARD_I2C_RATE);
 }
 
 void HVSwitchingBoardClass::process_wire_command() {
