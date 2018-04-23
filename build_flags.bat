@@ -1,7 +1,7 @@
 @echo off
 REM Store the version of the firmware in a variable.
 REM See https://stackoverflow.com/a/2340018/345236
-for /f %%i in ('python version.py') do set VERSION=%%i
+for /f %%i in ('python -c "import versioneer; print(versioneer.get_version())"') do set VERSION=%%i
 
 REM Use define build flags to set the following during build:
 REM

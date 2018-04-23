@@ -6,11 +6,11 @@ from base_node_rpc.pavement_base import develop_link, develop_unlink
 from paver.easy import task, needs, path, sh, options
 from paver.setuputils import install_distutils_tasks
 import base_node_rpc
+import versioneer
 
 # add the current directory as the first listing on the python path
 # so that we import the correct version.py
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-import version
 # Add package directory to Python path. This enables the use of
 # `hv_switching_board` functions for discovering, e.g., the path to the Arduino
 # firmware sketch source files.
@@ -22,7 +22,7 @@ install_distutils_tasks()
 PROPERTIES = OrderedDict([('base_node_software_version',
                            base_node_rpc.__version__),
                           ('package_name', 'hv-switching-board'),
-                          ('software_version', version.getVersion()),
+                          ('software_version', versioneer.get_version()),
                           ('url', 'https://github.com/wheeler-microfluidics/'
                            'hv-switching-board-firmware')])
 
@@ -30,6 +30,7 @@ options(
     PROPERTIES=PROPERTIES,
     setup=dict(name=PROPERTIES['package_name'],
                version=PROPERTIES['software_version'],
+               cmdclass=versioneer.get_cmdclass(),
                description='Arduino-based high-voltage switching board '
                'firmware and Python API.',
                author='Ryan Fobel and Christian Fobel',

@@ -1,8 +1,8 @@
 include README.md
-include RELEASE-VERSION
-include version.py
 include pavement.py
 include paver-minilib.zip
 include setup.py
 recursive-include hv_switching_board *
 prune *.pyc
+include versioneer.py
+include hv_switching_board/_version.py

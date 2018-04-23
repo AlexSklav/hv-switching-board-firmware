@@ -1,6 +1,10 @@
 from path_helpers import path
 
+from ._version import get_versions
 from .driver import HVSwitchingBoard
+
+__version__ = get_versions()['version']
+del get_versions
 
 
 def package_path():
