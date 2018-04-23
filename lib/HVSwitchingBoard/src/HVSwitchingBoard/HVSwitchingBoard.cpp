@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "HVSwitchingBoard.h"
 #include "Config.h"
 
@@ -44,7 +45,7 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
 
   // initialize channel state
   // Note: high bit means that the channel is off
-  memset(state_of_channels_, 255, 5);
+  std::fill(state_of_channels_, state_of_channels_ + 5, 255);
   update_all_channels();
 
   // set the i2c clock

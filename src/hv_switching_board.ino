@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <EEPROM.h>
 #include <BaseNode.h>
+#include <ArduinoSTL.h>
 
 #include "HVSwitchingBoard.h"
 
