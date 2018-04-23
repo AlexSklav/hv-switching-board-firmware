@@ -60,47 +60,22 @@ void HVSwitchingBoardClass::process_wire_command() {
    *    Add command to reset configuration.
    */
   return_code_ = RETURN_UNKNOWN_COMMAND;
-  uint8_t cmd = cmd_ & B00111111;
+  uint8_t register_addr = cmd_ & B00111111;
   bool auto_increment = (1 << 7) & cmd_;
   uint8_t port;
 
-  if ( (cmd >= PCA9505_CONFIG_IO_REGISTER_) &&
-       (cmd <= PCA9505_CONFIG_IO_REGISTER_ + 4) ) {
-    return_code_ = RETURN_OK;
-    send_payload_length_ = false;
-    port = cmd - PCA9505_CONFIG_IO_REGISTER_;
-    if (payload_length_ == 0) {
-      serialize(&config_io_register_[port], 1);
-    } else if (payload_length_ == 1) {
-      config_io_register_[port] = read<uint8_t>();
-      serialize(&config_io_register_[port], 1);
-    } else if (auto_increment && port+payload_length_ <= 5) {
-      for (uint8_t i = port; i < port+payload_length_; i++) {
-        config_io_register_[i] = read<uint8_t>();
-      }
-      serialize(&config_io_register_[port+payload_length_-1], 1);
-    } else {
-      return_code_ = RETURN_GENERAL_ERROR;
-    }
-  } else if ( (cmd >= PCA9505_OUTPUT_PORT_REGISTER_) &&
-       (cmd <= PCA9505_OUTPUT_PORT_REGISTER_ + 4) ) {
-    return_code_ = RETURN_OK;
-    send_payload_length_ = false;
-    port = cmd - PCA9505_OUTPUT_PORT_REGISTER_;
-    if (payload_length_ == 0) {
-      serialize(&state_of_channels_[port], 1);
-    } else if (payload_length_ == 1) {
-      state_of_channels_[port] = read<uint8_t>();
-      serialize(&state_of_channels_[port], 1);
+  if ((register_addr >= PCA9505_CONFIG_IO_REGISTER_) &&
+      (register_addr <= PCA9505_CONFIG_IO_REGISTER_ + 4)) {
+    // Emulate the PCA9505 config io registers (used by the control board to
+    // determine the chip type)
+    port_operation(config_io_register_, register_addr -
+                   PCA9505_CONFIG_IO_REGISTER_, auto_increment);
+  } else if ((register_addr >= PCA9505_OUTPUT_PORT_REGISTER_) &&
+             (register_addr <= PCA9505_OUTPUT_PORT_REGISTER_ + 4)) {
+    if (port_operation(state_of_channels_, register_addr -
+                       PCA9505_OUTPUT_PORT_REGISTER_, auto_increment) > 0) {
+      // Wrote at least port.  Update channel states.
       update_all_channels();
-    } else if (auto_increment && port+payload_length_ <= 5) {
-      for (uint8_t i = port; i < port+payload_length_; i++) {
-        state_of_channels_[i] = read<uint8_t>();
-      }
-      serialize(&state_of_channels_[port+payload_length_-1], 1);
-      update_all_channels();
-    } else {
-      return_code_ = RETURN_GENERAL_ERROR;
     }
   } else if (cmd_ == CMD_REBOOT) {
     // Reboot.
@@ -114,8 +89,6 @@ void HVSwitchingBoardClass::process_wire_command() {
   } else if (cmd_ == CMD_RESET_CONFIG) {
     load_config(true);
   } else {
-    // emulate the PCA9505 config io registers (used by the control board to
-    // determine the chip type)
     BaseNode::process_wire_command();
   }
 }

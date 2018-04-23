@@ -35,6 +35,7 @@
 #define HV_SWITCHING_BOARD_I2C_RATE 400000
 #endif
 
+
 class HVSwitchingBoardClass : public BaseNode {
 public:
   // PCA9505 (gpio) chip/register addresses (for emulation)
@@ -68,6 +69,42 @@ private:
   void update_all_channels();
   uint8_t state_of_channels_[5];
   uint8_t config_io_register_[5];
+
+  template <typename Ports>
+  int port_operation(Ports &ports, uint8_t port, bool auto_increment) {
+    /* **Read/write operation** to/from one or more register ports where:
+     *
+     *  - The command corresponds to the starting address
+     *  - The type of operation is defined by the length of the payload.
+     */
+    return_code_ = RETURN_OK;
+    send_payload_length_ = false;
+
+    if (payload_length_ == 0) {
+      // Empty payload corresponds to a **read** operation.
+      serialize(&ports[port], 1);
+      return 0;
+    } else if (payload_length_ == 1) {
+      // A single byte payload corresponds to a **write** operation to a single
+      // port.
+      ports[port] = read<uint8_t>();
+      serialize(&ports[port], 1);
+      return 1;
+    } else if (auto_increment && (port + payload_length_ <= 5)) {
+      // Auto-increment was specified.
+      // Sequentially write to consecutive ports, one byte at a time, starting
+      // at the first byte in the payload and continue until the last byte in
+      // the payload.
+      for (uint8_t i = port; i < port + payload_length_; i++) {
+        ports[i] = read<uint8_t>();
+      }
+      serialize(&ports[port + payload_length_ - 1], 1);
+      return payload_length_;
+    } else {
+      return_code_ = RETURN_GENERAL_ERROR;
+    }
+    return -1;
+  }
 };
 
 extern HVSwitchingBoardClass HVSwitchingBoard;
