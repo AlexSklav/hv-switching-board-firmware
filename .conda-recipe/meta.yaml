@@ -14,23 +14,23 @@ package:
 requirements:
   build:
     - arduino-linked-list >=1.2.3
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - arduino-memory >=1.4
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - arduino-slow-soft-wire >=1.0.1
     # .. versionchanged:: 0.10
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - base-node >=0.14
     # .. versionchanged:: 0.10
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - base-node-rpc >=0.48.3
     - future
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - nanopb-helpers >=0.12
     - paver
     - pip
     - platformio-framework-arduinoavr >=1.136.0
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - platformio-helpers >=0.10
     - platformio-tool-scons
     - platformio-toolchain-atmelavr
@@ -40,23 +40,23 @@ requirements:
 
   run:
     - arduino-linked-list >=1.2.3
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - arduino-memory >=1.4
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - arduino-slow-soft-wire >=1.0.1
     # .. versionchanged:: 0.10
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - base-node >=0.14
     # .. versionchanged:: 0.10
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - base-node-rpc >=0.48.3
     - future
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - nanopb-helpers >=0.12
     - paver
     - pip
     - platformio-framework-arduinoavr >=1.136.0
-    #: .. versionchanged:: X.X.X
+    #: .. versionchanged:: 0.12
     - platformio-helpers >=0.10
     - platformio-tool-scons
     - platformio-toolchain-atmelavr

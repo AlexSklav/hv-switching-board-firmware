@@ -1,6 +1,7 @@
 /**
  * @since **0.9**: Support both hardware major versions 2 and 3.
  * @since **0.10**: Add command to reset configuration.
+ * @since **0.12**: Add **I2C broadcast** receiving **getter** and **setter**.
  */
 #ifndef ___HV_SWITCHING_BOARD__H___
 #define ___HV_SWITCHING_BOARD__H___
@@ -83,7 +84,7 @@ public:
    *
    * @since **0.8**: Add \link CMD_REBOOT reboot command\endlink.
    * @since **0.10**: Add \link CMD_RESET_CONFIG command to reset configuration\endlink.
-   * @since **X.X.X**: Add **I2C broadcast** receiving \link CMD_GET_GENERAL_CALL_ENABLED **getter**\endlink and
+   * @since **0.12**: Add **I2C broadcast** receiving \link CMD_GET_GENERAL_CALL_ENABLED **getter**\endlink and
    *   \link CMD_SET_GENERAL_CALL_ENABLED **setter**\endlink commands.
    *
    * @return `true` if a request was processed.
