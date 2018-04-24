@@ -63,3 +63,12 @@ def upload():
 def sdist():
     """Overrides sdist to make sure that our setup.py is generated."""
     pass
+
+
+@task
+def docs():
+    env = os.environ.copy()
+    env.update({'PROJECT_NAME': PROPERTIES['package_name'],
+                'PROJECT_BRIEF': 'High-voltage switching board firmware',
+                'PROJECT_NUMBER': PROPERTIES['software_version']})
+    sh('doxygen', env=env)
