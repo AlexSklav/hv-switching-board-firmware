@@ -50,6 +50,11 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
 
   // set the i2c clock
   Wire.setClock(HV_SWITCHING_BOARD_I2C_RATE);
+
+  // By default, enable receiving of broadcast messages (i.e., messages sent to
+  // address 0).  This can be enabled/disabled through the
+  // `CMD_SET_GENERAL_CALL_ENABLED` I2C command.
+  general_call(true);
 }
 
 void HVSwitchingBoardClass::process_wire_command() {
@@ -80,6 +85,20 @@ void HVSwitchingBoardClass::process_wire_command() {
     }
   } else {
     switch (cmd_) {
+      case CMD_GET_GENERAL_CALL_ENABLED:
+        {
+          const uint8_t general_call_enabled = general_call();
+          serialize(&general_call_enabled, sizeof(general_call_enabled));
+        }
+        return_code_ = RETURN_OK;
+        break;
+      case CMD_SET_GENERAL_CALL_ENABLED:
+        {
+          const uint8_t general_call_enabled = read<uint8_t>();
+          general_call(general_call_enabled);
+        }
+        return_code_ = RETURN_OK;
+        break;
       case CMD_REBOOT:
         // Reboot.
         Serial.println("Rebooting...");

@@ -44,6 +44,8 @@ public:
 
   static const uint8_t CMD_REBOOT = 0xA2;
   static const uint8_t CMD_RESET_CONFIG = 0xA3;
+  static const uint8_t CMD_SET_GENERAL_CALL_ENABLED = 0xA4;
+  static const uint8_t CMD_GET_GENERAL_CALL_ENABLED = 0xA5;
 
   // digital pins
   static const uint8_t OE = 8;
@@ -63,6 +65,16 @@ public:
   void begin() { begin(HV_SWITCHING_BOARD_BAUD_RATE); }
   void process_wire_command();
   bool process_serial_input();
+  void general_call(bool state) {
+    if (state) {
+      // Enable receiving of broadcasts, i.e., messages sent to address 0.
+      TWAR |= 1;
+    } else {
+      // Disable receiving of broadcasts, i.e., messages sent to address 0.
+      TWAR &= ~0x01;
+    }
+  }
+  bool general_call() const { return TWAR & 0x01; }
 protected:
   bool supports_isp() { return true; }
 private:
