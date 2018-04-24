@@ -91,6 +91,21 @@ public:
    * @since **0.12**: Add **I2C broadcast** receiving \link CMD_GET_GENERAL_CALL_ENABLED **getter**\endlink and
    *   \link CMD_SET_GENERAL_CALL_ENABLED **setter**\endlink commands.
    *
+   * ## Commands
+   *
+   * | I2C RX                                       | Action                              | I2C TX                    |
+   * |----------------------------------------------|-------------------------------------|---------------------------|
+   * | `[#PCA9505_CONFIG_IO_REGISTER_+p]`           | N/A                                 | `#config_io_register_[p]` |
+   * | `[#PCA9505_CONFIG_IO_REGISTER_+p, v]`        | `#config_io_register_[p] = v`       | N/A                       |
+   * | `[#PCA9505_CONFIG_IO_REGISTER_+p, v1..vn]`   | `#config_io_register_[p:] = v1..vn` | N/A                       |
+   * | `[#PCA9505_OUTPUT_PORT_REGISTER_+p]`         | N/A                                 | `#state_of_channels_[p]`  |
+   * | `[#PCA9505_OUTPUT_PORT_REGISTER_+p, v]`      | `#state_of_channels_[p] = v`        | N/A                       |
+   * | `[#PCA9505_OUTPUT_PORT_REGISTER_+p, v1..vn]` | `#state_of_channels_[p:] = v1..vn`  | N/A                       |
+   * | `[#CMD_REBOOT]`                              | Reboot                              | N/A                       |
+   * | `[#CMD_RESET_CONFIG]`                        | Reset config to default             | N/A                       |
+   * | `[#CMD_SET_GENERAL_CALL_ENABLED, v]`         | Receive I2C broadcasts if `v`       | N/A                       |
+   * | `[#CMD_GET_GENERAL_CALL_ENABLED, v]`         | N/A                                 | `[<receiving broadcasts]` |
+   *
    * @return `true` if a request was processed.
    */
   void process_wire_command();
