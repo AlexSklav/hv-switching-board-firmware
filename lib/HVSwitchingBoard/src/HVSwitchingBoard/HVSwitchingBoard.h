@@ -39,17 +39,17 @@
 class HVSwitchingBoardClass : public BaseNode {
 public:
   // PCA9505 (gpio) chip/register addresses (for emulation)
-  static const uint8_t PCA9505_CONFIG_IO_REGISTER_ = 0x18;
-  static const uint8_t PCA9505_OUTPUT_PORT_REGISTER_ = 0x08;
+  static constexpr uint8_t PCA9505_CONFIG_IO_REGISTER_ = 0x18;
+  static constexpr uint8_t PCA9505_OUTPUT_PORT_REGISTER_ = 0x08;
 
-  static const uint8_t CMD_REBOOT = 0xA2;
-  static const uint8_t CMD_RESET_CONFIG = 0xA3;
-  static const uint8_t CMD_SET_GENERAL_CALL_ENABLED = 0xA4;
-  static const uint8_t CMD_GET_GENERAL_CALL_ENABLED = 0xA5;
+  static constexpr uint8_t CMD_REBOOT = 0xA2;
+  static constexpr uint8_t CMD_RESET_CONFIG = 0xA3;
+  static constexpr uint8_t CMD_SET_GENERAL_CALL_ENABLED = 0xA4;
+  static constexpr uint8_t CMD_GET_GENERAL_CALL_ENABLED = 0xA5;
 
   // digital pins
-  static const uint8_t OE = 8;
-  static const uint8_t SRCLR = 9;
+  static constexpr uint8_t OE = 8;
+  static constexpr uint8_t SRCLR = 9;
 #if ___HARDWARE_MAJOR_VERSION___==2
   // Version 2 hardware uses **software** SPI.
   static const uint8_t S_SS = 3;
