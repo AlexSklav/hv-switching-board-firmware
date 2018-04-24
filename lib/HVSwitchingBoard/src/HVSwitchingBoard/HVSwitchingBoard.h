@@ -1,9 +1,6 @@
-/*
- * .. versionchanged:: 0.9
- *    Support both hardware major versions 2 and 3.
- *
- * .. versionchanged:: 0.10
- *    Add command to reset configuration.
+/**
+ * @since **0.9**: Support both hardware major versions 2 and 3.
+ * @since **0.10**: Add command to reset configuration.
  */
 #ifndef ___HV_SWITCHING_BOARD__H___
 #define ___HV_SWITCHING_BOARD__H___
@@ -38,13 +35,23 @@
 
 class HVSwitchingBoardClass : public BaseNode {
 public:
-  // PCA9505 (gpio) chip/register addresses (for emulation)
+  //! PCA9505 (gpio) chip **configuration** register address (for emulation)
   static constexpr uint8_t PCA9505_CONFIG_IO_REGISTER_ = 0x18;
+  //! PCA9505 (gpio) chip **output** register address (for emulation)
   static constexpr uint8_t PCA9505_OUTPUT_PORT_REGISTER_ = 0x08;
 
+  //! Perform a software reboot.
   static constexpr uint8_t CMD_REBOOT = 0xA2;
+  //! Reset configuration to default.
   static constexpr uint8_t CMD_RESET_CONFIG = 0xA3;
+  /**
+   * @brief Enable/disable receiving of broadcast messages (i.e., messages sent
+   * to address 0).
+   */
   static constexpr uint8_t CMD_SET_GENERAL_CALL_ENABLED = 0xA4;
+   /**
+    * @brief Get current broadcast receiving setting.
+    */
   static constexpr uint8_t CMD_GET_GENERAL_CALL_ENABLED = 0xA5;
 
   // digital pins
@@ -61,10 +68,41 @@ public:
 #endif
 
   HVSwitchingBoardClass();
+
+  /**
+   * @brief Initialize board.
+   *
+   * @since **0.9**: Support both hardware major versions 2 and 3.
+   *
+   * @param baud_rate Serial interface baud rate.
+   */
   void begin(uint32_t baud_rate);
   void begin() { begin(HV_SWITCHING_BOARD_BAUD_RATE); }
+  /**
+   * @brief Process any requests available from **I2C/Wire** input
+   *
+   * @since **0.8**: Add \link CMD_REBOOT reboot command\endlink.
+   * @since **0.10**: Add \link CMD_RESET_CONFIG command to reset configuration\endlink.
+   * @since **X.X.X**: Add **I2C broadcast** receiving \link CMD_GET_GENERAL_CALL_ENABLED **getter**\endlink and
+   *   \link CMD_SET_GENERAL_CALL_ENABLED **setter**\endlink commands.
+   *
+   * @return `true` if a request was processed.
+   */
   void process_wire_command();
+  /**
+   * @brief Process any requests available from **serial input**
+   *
+   * @since **0.8**: Add `reboot()` serial command.
+   *
+   * @return `true` if a request was processed.
+   */
   bool process_serial_input();
+  /**
+   * @brief Enable/disable receiving of broadcasts, i.e., messages sent to
+   * address 0.
+   *
+   * @param state  If `true`, **enable**.  Otherwise, **disable**.
+   */
   void general_call(bool state) {
     if (state) {
       // Enable receiving of broadcasts, i.e., messages sent to address 0.
@@ -74,21 +112,45 @@ public:
       TWAR &= ~0x01;
     }
   }
+  /**
+   * @brief Broadcast receiving setting.
+   *
+   * @return `true` if receiving of broadcasts is **enabled**.
+   */
   bool general_call() const { return TWAR & 0x01; }
 protected:
   bool supports_isp() { return true; }
 private:
+  /**
+   * @brief Propagate channel states from #state_of_channels_ to output
+   * registers.
+   *
+   * @since **0.9**: Support both hardware major versions 2 and 3.
+   */
   void update_all_channels();
+  //! Requested state of channels.
   uint8_t state_of_channels_[5];
+  //! Configuration registers to emulate PCA9505 protocol.
   uint8_t config_io_register_[5];
 
+  /**
+   * @brief **Read/write operation** to/from one or more register ports
+   *
+   * where:
+   *
+   *  - The command (BaseNode::cmd_) corresponds to the starting address
+   *  - The type of operation is defined by the length of the payload
+   *    (BaseNode::payload_length_) .
+   *
+   * @tparam Ports  Ports array type (e.g., `uint8_t[]`)
+   * @param ports  Ports array
+   * @param port  Starting port index within array
+   * @param auto_increment  Assign full payload to consecutive array addresses
+   *
+   * @return
+   */
   template <typename Ports>
   int port_operation(Ports &ports, uint8_t port, bool auto_increment) {
-    /* **Read/write operation** to/from one or more register ports where:
-     *
-     *  - The command corresponds to the starting address
-     *  - The type of operation is defined by the length of the payload.
-     */
     return_code_ = RETURN_OK;
     send_payload_length_ = false;
 
