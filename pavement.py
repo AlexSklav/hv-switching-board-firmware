@@ -6,15 +6,11 @@ from base_node_rpc.pavement_base import develop_link, develop_unlink
 from paver.easy import task, needs, path, sh, options
 from paver.setuputils import install_distutils_tasks
 import base_node_rpc
-import versioneer
 
 # add the current directory as the first listing on the python path
 # so that we import the correct version.py
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-# Add package directory to Python path. This enables the use of
-# `hv_switching_board` functions for discovering, e.g., the path to the Arduino
-# firmware sketch source files.
-sys.path.append(path('.').abspath())
+import versioneer
 
 install_distutils_tasks()
 
