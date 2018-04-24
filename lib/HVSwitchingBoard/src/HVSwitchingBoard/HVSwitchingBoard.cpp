@@ -78,9 +78,10 @@ void HVSwitchingBoardClass::process_wire_command() {
                    PCA9505_CONFIG_IO_REGISTER_, auto_increment);
   } else if ((register_addr >= PCA9505_OUTPUT_PORT_REGISTER_) &&
              (register_addr <= PCA9505_OUTPUT_PORT_REGISTER_ + 4)) {
+    // Emulate the PCA9505 output registers.
     if (port_operation(state_of_channels_, register_addr -
                        PCA9505_OUTPUT_PORT_REGISTER_, auto_increment) > 0) {
-      // Wrote at least port.  Update channel states.
+      // At least one port was updated.  Propagate update to channel states.
       update_all_channels();
     }
   } else {
