@@ -14,18 +14,24 @@ package:
 requirements:
   build:
     - arduino-linked-list >=1.2.3
-    - arduino-memory
-    - arduino-slow-soft-wire
+    #: .. versionchanged:: 0.12
+    - arduino-memory >=1.4
+    #: .. versionchanged:: 0.12
+    - arduino-slow-soft-wire >=1.0.1
     # .. versionchanged:: 0.10
-    - base-node >=0.10.1
+    #: .. versionchanged:: 0.12
+    - base-node >=0.14
     # .. versionchanged:: 0.10
-    - base-node-rpc >=0.33
+    #: .. versionchanged:: 0.12
+    - base-node-rpc >=0.48.3
     - future
-    - nanopb-helpers >=0.6
+    #: .. versionchanged:: 0.12
+    - nanopb-helpers >=0.12
     - paver
     - pip
     - platformio-framework-arduinoavr >=1.136.0
-    - platformio-helpers >=0.2
+    #: .. versionchanged:: 0.12
+    - platformio-helpers >=0.10
     - platformio-tool-scons
     - platformio-toolchain-atmelavr
     - pytables
@@ -34,18 +40,24 @@ requirements:
 
   run:
     - arduino-linked-list >=1.2.3
-    - arduino-memory
-    - arduino-slow-soft-wire
+    #: .. versionchanged:: 0.12
+    - arduino-memory >=1.4
+    #: .. versionchanged:: 0.12
+    - arduino-slow-soft-wire >=1.0.1
     # .. versionchanged:: 0.10
-    - base-node >=0.10.1
+    #: .. versionchanged:: 0.12
+    - base-node >=0.14
     # .. versionchanged:: 0.10
-    - base-node-rpc >=0.33
+    #: .. versionchanged:: 0.12
+    - base-node-rpc >=0.48.3
     - future
-    - nanopb-helpers >=0.6
+    #: .. versionchanged:: 0.12
+    - nanopb-helpers >=0.12
     - paver
     - pip
     - platformio-framework-arduinoavr >=1.136.0
-    - platformio-helpers >=0.2
+    #: .. versionchanged:: 0.12
+    - platformio-helpers >=0.10
     - platformio-tool-scons
     - platformio-toolchain-atmelavr
     - pytables

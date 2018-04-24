@@ -1,4 +1,5 @@
 dist/
+docs/
 setup.py
 Config.h
 .sconsign.dblite

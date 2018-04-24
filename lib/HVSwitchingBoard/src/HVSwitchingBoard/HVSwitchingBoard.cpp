@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "HVSwitchingBoard.h"
 #include "Config.h"
 
@@ -44,8 +45,16 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
 
   // initialize channel state
   // Note: high bit means that the channel is off
-  memset(state_of_channels_, 255, 5);
+  std::fill(state_of_channels_, state_of_channels_ + 5, 255);
   update_all_channels();
+
+  // set the i2c clock
+  Wire.setClock(HV_SWITCHING_BOARD_I2C_RATE);
+
+  // By default, enable receiving of broadcast messages (i.e., messages sent to
+  // address 0).  This can be enabled/disabled through the
+  // `CMD_SET_GENERAL_CALL_ENABLED` I2C command.
+  general_call(true);
 }
 
 void HVSwitchingBoardClass::process_wire_command() {
@@ -57,63 +66,57 @@ void HVSwitchingBoardClass::process_wire_command() {
    *    Add command to reset configuration.
    */
   return_code_ = RETURN_UNKNOWN_COMMAND;
-  uint8_t cmd = cmd_ & B00111111;
+  uint8_t register_addr = cmd_ & B00111111;
   bool auto_increment = (1 << 7) & cmd_;
   uint8_t port;
 
-  if ( (cmd >= PCA9505_CONFIG_IO_REGISTER_) &&
-       (cmd <= PCA9505_CONFIG_IO_REGISTER_ + 4) ) {
-    return_code_ = RETURN_OK;
-    send_payload_length_ = false;
-    port = cmd - PCA9505_CONFIG_IO_REGISTER_;
-    if (payload_length_ == 0) {
-      serialize(&config_io_register_[port], 1);
-    } else if (payload_length_ == 1) {
-      config_io_register_[port] = read<uint8_t>();
-      serialize(&config_io_register_[port], 1);
-    } else if (auto_increment && port+payload_length_ <= 5) {
-      for (uint8_t i = port; i < port+payload_length_; i++) {
-        config_io_register_[i] = read<uint8_t>();
-      }
-      serialize(&config_io_register_[port+payload_length_-1], 1);
-    } else {
-      return_code_ = RETURN_GENERAL_ERROR;
-    }
-  } else if ( (cmd >= PCA9505_OUTPUT_PORT_REGISTER_) &&
-       (cmd <= PCA9505_OUTPUT_PORT_REGISTER_ + 4) ) {
-    return_code_ = RETURN_OK;
-    send_payload_length_ = false;
-    port = cmd - PCA9505_OUTPUT_PORT_REGISTER_;
-    if (payload_length_ == 0) {
-      serialize(&state_of_channels_[port], 1);
-    } else if (payload_length_ == 1) {
-      state_of_channels_[port] = read<uint8_t>();
-      serialize(&state_of_channels_[port], 1);
-      update_all_channels();
-    } else if (auto_increment && port+payload_length_ <= 5) {
-      for (uint8_t i = port; i < port+payload_length_; i++) {
-        state_of_channels_[i] = read<uint8_t>();
-      }
-      serialize(&state_of_channels_[port+payload_length_-1], 1);
-      update_all_channels();
-    } else {
-      return_code_ = RETURN_GENERAL_ERROR;
-    }
-  } else if (cmd_ == CMD_REBOOT) {
-    // Reboot.
-    Serial.println("Rebooting...");
-    do {
-      wdt_enable(WDTO_15MS);
-      for(;;)
-      {
-      }
-    } while(0);
-  } else if (cmd_ == CMD_RESET_CONFIG) {
-    load_config(true);
-  } else {
-    // emulate the PCA9505 config io registers (used by the control board to
+  if ((register_addr >= PCA9505_CONFIG_IO_REGISTER_) &&
+      (register_addr <= PCA9505_CONFIG_IO_REGISTER_ + 4)) {
+    // Emulate the PCA9505 config io registers (used by the control board to
     // determine the chip type)
-    BaseNode::process_wire_command();
+    port_operation(config_io_register_, register_addr -
+                   PCA9505_CONFIG_IO_REGISTER_, auto_increment);
+  } else if ((register_addr >= PCA9505_OUTPUT_PORT_REGISTER_) &&
+             (register_addr <= PCA9505_OUTPUT_PORT_REGISTER_ + 4)) {
+    // Emulate the PCA9505 output registers.
+    if (port_operation(state_of_channels_, register_addr -
+                       PCA9505_OUTPUT_PORT_REGISTER_, auto_increment) > 0) {
+      // At least one port was updated.  Propagate update to channel states.
+      update_all_channels();
+    }
+  } else {
+    switch (cmd_) {
+      case CMD_GET_GENERAL_CALL_ENABLED:
+        {
+          const uint8_t general_call_enabled = general_call();
+          serialize(&general_call_enabled, sizeof(general_call_enabled));
+        }
+        return_code_ = RETURN_OK;
+        break;
+      case CMD_SET_GENERAL_CALL_ENABLED:
+        {
+          const uint8_t general_call_enabled = read<uint8_t>();
+          general_call(general_call_enabled);
+        }
+        return_code_ = RETURN_OK;
+        break;
+      case CMD_REBOOT:
+        // Reboot.
+        Serial.println("Rebooting...");
+        do {
+          wdt_enable(WDTO_15MS);
+          for(;;)
+          {
+          }
+        } while(0);
+        break;
+      case CMD_RESET_CONFIG:
+        load_config(true);
+        break;
+      default:
+        BaseNode::process_wire_command();
+        break;
+    }
   }
 }
 
