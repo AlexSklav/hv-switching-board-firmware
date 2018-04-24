@@ -77,19 +77,25 @@ void HVSwitchingBoardClass::process_wire_command() {
       // Wrote at least port.  Update channel states.
       update_all_channels();
     }
-  } else if (cmd_ == CMD_REBOOT) {
-    // Reboot.
-    Serial.println("Rebooting...");
-    do {
-      wdt_enable(WDTO_15MS);
-      for(;;)
-      {
-      }
-    } while(0);
-  } else if (cmd_ == CMD_RESET_CONFIG) {
-    load_config(true);
   } else {
-    BaseNode::process_wire_command();
+    switch (cmd_) {
+      case CMD_REBOOT:
+        // Reboot.
+        Serial.println("Rebooting...");
+        do {
+          wdt_enable(WDTO_15MS);
+          for(;;)
+          {
+          }
+        } while(0);
+        break;
+      case CMD_RESET_CONFIG:
+        load_config(true);
+        break;
+      default:
+        BaseNode::process_wire_command();
+        break;
+    }
   }
 }
 
