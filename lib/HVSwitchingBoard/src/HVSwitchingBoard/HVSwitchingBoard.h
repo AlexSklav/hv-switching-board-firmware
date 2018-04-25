@@ -12,6 +12,8 @@
 #include <SPI.h>
 #endif
 #include <BaseNode.h>
+#include "array"  // std::array backported to ArduinoSTL
+#include "Channels.h"
 
 #ifndef HV_SWITCHING_BOARD_BAUD_RATE
 /*
@@ -33,9 +35,11 @@
 #define HV_SWITCHING_BOARD_I2C_RATE 400000
 #endif
 
+using dropbot::hv_switching_board::channels::N_SWITCH_PORTS;
 
 class HVSwitchingBoardClass : public BaseNode {
 public:
+
   //! PCA9505 (gpio) chip **configuration** register address (for emulation)
   static constexpr uint8_t PCA9505_CONFIG_IO_REGISTER_ = 0x18;
   //! PCA9505 (gpio) chip **output** register address (for emulation)
@@ -129,10 +133,10 @@ private:
    * @since **0.9**: Support both hardware major versions 2 and 3.
    */
   void update_all_channels();
-  //! Requested state of channels.
-  uint8_t state_of_channels_[5];
+  //! Requested state of channels (packed, one bit per channel).
+  std::array<uint8_t, N_SWITCH_PORTS> state_of_channels_;
   //! Configuration registers to emulate PCA9505 protocol.
-  uint8_t config_io_register_[5];
+  std::array<uint8_t, N_SWITCH_PORTS> config_io_register_;
 
   /**
    * @brief **Read/write operation** to/from one or more register ports
