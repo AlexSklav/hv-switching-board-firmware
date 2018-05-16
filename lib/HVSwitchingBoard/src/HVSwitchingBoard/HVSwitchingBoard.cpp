@@ -21,6 +21,9 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
   /*
    * .. versionchanged:: 0.9
    *    Support both hardware major versions 2 and 3.
+   *
+   * .. versionchanged:: 0.13
+   *    Fill ``state_of_channels_`` as **active HIGH**.
    */
   BaseNode::begin(baud_rate);
 
@@ -43,9 +46,8 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
   digitalWrite(SRCLR, HIGH);
   digitalWrite(OE, LOW);
 
-  // initialize channel state
-  // Note: high bit means that the channel is off
-  std::fill(state_of_channels_, state_of_channels_ + 5, 255);
+  // Initialize channel states
+  state_of_channels_.fill(0);
   update_all_channels();
 
   // set the i2c clock
@@ -80,7 +82,9 @@ void HVSwitchingBoardClass::process_wire_command() {
              (register_addr <= PCA9505_OUTPUT_PORT_REGISTER_ + 4)) {
     // Emulate the PCA9505 output registers.
     if (port_operation(state_of_channels_, register_addr -
-                       PCA9505_OUTPUT_PORT_REGISTER_, auto_increment) > 0) {
+                       PCA9505_OUTPUT_PORT_REGISTER_, auto_increment,
+                       // Invert from **active LOW** to **active HIGH**.
+                       true) > 0) {
       // At least one port was updated.  Propagate update to channel states.
       update_all_channels();
     }
@@ -166,10 +170,10 @@ void HVSwitchingBoardClass::update_all_channels() {
   for (uint8_t i = 0; i < port_count; i++) {
 #if ___HARDWARE_MAJOR_VERSION___==2
   // Version 2 hardware uses **software** SPI.
-    shiftOutFast(S_MOSI, S_SCK, MSBFIRST, ~state_of_channels_[4-i]);
+    shiftOutFast(S_MOSI, S_SCK, MSBFIRST, state_of_channels_[4 - i]);
 #elif ___HARDWARE_MAJOR_VERSION___==3
   // Version 3 hardware uses **hardware** SPI.
-    SPI.transfer(~state_of_channels_[4-i]);
+    SPI.transfer(state_of_channels_[4 - i]);
 #endif
   }
   // Release PCA9505 chips for SPI access.

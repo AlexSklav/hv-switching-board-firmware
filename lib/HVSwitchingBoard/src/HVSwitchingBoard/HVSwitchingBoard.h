@@ -12,6 +12,8 @@
 #include <SPI.h>
 #endif
 #include <BaseNode.h>
+#include "array"  // std::array backported to ArduinoSTL
+#include "Channels.h"
 
 #ifndef HV_SWITCHING_BOARD_BAUD_RATE
 /*
@@ -33,9 +35,11 @@
 #define HV_SWITCHING_BOARD_I2C_RATE 400000
 #endif
 
+using dropbot::hv_switching_board::channels::N_SWITCH_PORTS;
 
 class HVSwitchingBoardClass : public BaseNode {
 public:
+
   //! PCA9505 (gpio) chip **configuration** register address (for emulation)
   static constexpr uint8_t PCA9505_CONFIG_IO_REGISTER_ = 0x18;
   //! PCA9505 (gpio) chip **output** register address (for emulation)
@@ -87,6 +91,21 @@ public:
    * @since **0.12**: Add **I2C broadcast** receiving \link CMD_GET_GENERAL_CALL_ENABLED **getter**\endlink and
    *   \link CMD_SET_GENERAL_CALL_ENABLED **setter**\endlink commands.
    *
+   * ## Commands
+   *
+   * | I2C RX                                       | Action                              | I2C TX                    |
+   * |----------------------------------------------|-------------------------------------|---------------------------|
+   * | `[#PCA9505_CONFIG_IO_REGISTER_+p]`           | N/A                                 | `#config_io_register_[p]` |
+   * | `[#PCA9505_CONFIG_IO_REGISTER_+p, v]`        | `#config_io_register_[p] = v`       | N/A                       |
+   * | `[#PCA9505_CONFIG_IO_REGISTER_+p, v1..vn]`   | `#config_io_register_[p:] = v1..vn` | N/A                       |
+   * | `[#PCA9505_OUTPUT_PORT_REGISTER_+p]`         | N/A                                 | `#state_of_channels_[p]`  |
+   * | `[#PCA9505_OUTPUT_PORT_REGISTER_+p, v]`      | `#state_of_channels_[p] = v`        | N/A                       |
+   * | `[#PCA9505_OUTPUT_PORT_REGISTER_+p, v1..vn]` | `#state_of_channels_[p:] = v1..vn`  | N/A                       |
+   * | `[#CMD_REBOOT]`                              | Reboot                              | N/A                       |
+   * | `[#CMD_RESET_CONFIG]`                        | Reset config to default             | N/A                       |
+   * | `[#CMD_SET_GENERAL_CALL_ENABLED, v]`         | Receive I2C broadcasts if `v`       | N/A                       |
+   * | `[#CMD_GET_GENERAL_CALL_ENABLED, v]`         | N/A                                 | `[<receiving broadcasts]` |
+   *
    * @return `true` if a request was processed.
    */
   void process_wire_command();
@@ -129,10 +148,10 @@ private:
    * @since **0.9**: Support both hardware major versions 2 and 3.
    */
   void update_all_channels();
-  //! Requested state of channels.
-  uint8_t state_of_channels_[5];
+  //! Requested state of channels (packed, one bit per channel).
+  std::array<uint8_t, N_SWITCH_PORTS> state_of_channels_;
   //! Configuration registers to emulate PCA9505 protocol.
-  uint8_t config_io_register_[5];
+  std::array<uint8_t, N_SWITCH_PORTS> config_io_register_;
 
   /**
    * @brief **Read/write operation** to/from one or more register ports
@@ -151,29 +170,37 @@ private:
    * @return
    */
   template <typename Ports>
-  int port_operation(Ports &ports, uint8_t port, bool auto_increment) {
+  int port_operation(Ports &ports, uint8_t port, bool auto_increment,
+                     bool invert=false) {
     return_code_ = RETURN_OK;
     send_payload_length_ = false;
 
     if (payload_length_ == 0) {
       // Empty payload corresponds to a **read** operation.
-      serialize(&ports[port], 1);
+      auto value = ports[port];
+      if (invert) {
+        value = ~value;
+      }
+      serialize(&value, 1);
       return 0;
     } else if (payload_length_ == 1) {
       // A single byte payload corresponds to a **write** operation to a single
       // port.
-      ports[port] = read<uint8_t>();
-      serialize(&ports[port], 1);
+      auto value = read<uint8_t>();
+      ports[port] = (invert) ? ~value : value;
+      serialize(&value, 1);
       return 1;
     } else if (auto_increment && (port + payload_length_ <= 5)) {
       // Auto-increment was specified.
       // Sequentially write to consecutive ports, one byte at a time, starting
       // at the first byte in the payload and continue until the last byte in
       // the payload.
+      uint8_t value = 0;
       for (uint8_t i = port; i < port + payload_length_; i++) {
-        ports[i] = read<uint8_t>();
+        value = read<uint8_t>();
+        ports[i] = (invert) ? ~value : value;
       }
-      serialize(&ports[port + payload_length_ - 1], 1);
+      serialize(&value, 1);
       return payload_length_;
     } else {
       return_code_ = RETURN_GENERAL_ERROR;
