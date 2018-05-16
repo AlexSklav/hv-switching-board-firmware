@@ -22,7 +22,7 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
    * .. versionchanged:: 0.9
    *    Support both hardware major versions 2 and 3.
    *
-   * .. versionchanged:: X.X.X
+   * .. versionchanged:: 0.13
    *    Fill ``state_of_channels_`` as **active HIGH**.
    */
   BaseNode::begin(baud_rate);
