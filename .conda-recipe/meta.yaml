@@ -1,75 +1,61 @@
-# source will be downloaded prior to filling in jinja templates
-# Example assumes that this folder has setup.py in it
-source:
-  git_url: ../
-
-package:
-  name: hv-switching-board
 {% if GIT_DESCRIBE_NUMBER > '0' %}
-  version: {{ GIT_DESCRIBE_TAG[1:] }}.{{ GIT_DESCRIBE_NUMBER }}
+{% set GIT_VERSION = GIT_DESCRIBE_TAG[1:] + '.post' + GIT_DESCRIBE_NUMBER %}
 {% else %}
-  version: {{ GIT_DESCRIBE_TAG[1:] }}.0
+{% set GIT_VERSION = GIT_DESCRIBE_TAG[1:] %}
 {% endif %}
+{% set PKG_NAME = 'hv-switching-board' %}
+{% set LIB_NAME = 'HVSwitchingBoard' %}
+{% set MODULE_NAME = PKG_NAME.replace('-', '_') %}
+package:
+  name: {{ PKG_NAME }}
+  version: {{ GIT_VERSION }}
+
+build:
+  noarch: python
+  script:
+    # Copy Arduino library to Conda include directory and generate Arduino `library.properties` file
+    - python file_handler.py {{ SRC_DIR }} {{ PREFIX }} {{ PKG_NAME }} {{ MODULE_NAME }} {{ LIB_NAME }}
+    # Install source directory as Python package.
+    - python -B setup.py install --single-version-externally-managed --record record.txt
 
 requirements:
   build:
-    - arduino-linked-list >=1.2.3
-    #: .. versionchanged:: 0.12
-    - arduino-memory >=1.4
-    #: .. versionchanged:: 0.12
-    - arduino-slow-soft-wire >=1.0.1
-    # .. versionchanged:: 0.10
-    #: .. versionchanged:: 0.12
-    - base-node >=0.14
-    # .. versionchanged:: 0.10
-    #: .. versionchanged:: 0.12
-    - base-node-rpc >=0.48.3
-    - future
-    #: .. versionchanged:: 0.12
-    - nanopb-helpers >=0.12
-    - paver
-    - pip
-    - platformio-framework-arduinoavr >=1.136.0
-    #: .. versionchanged:: 0.12
-    - platformio-helpers >=0.10
-    - platformio-tool-scons
-    - platformio-toolchain-atmelavr
+    - python >=3.8
+    - numpy
+    - base-node
     - pytables
-    - python 2.7*
-    - serial-device >=0.7
+    - platformio
+    - base-node-rpc
+    - path-helpers
+    - nanopb-helpers
+    - dropbot-headers
+    - platformio-helpers
+    - serial-device
+    - pip
 
   run:
-    - arduino-linked-list >=1.2.3
-    #: .. versionchanged:: 0.12
-    - arduino-memory >=1.4
-    #: .. versionchanged:: 0.12
-    - arduino-slow-soft-wire >=1.0.1
-    # .. versionchanged:: 0.10
-    #: .. versionchanged:: 0.12
-    - base-node >=0.14
-    # .. versionchanged:: 0.10
-    #: .. versionchanged:: 0.12
-    - base-node-rpc >=0.48.3
-    - future
-    #: .. versionchanged:: 0.12
-    - nanopb-helpers >=0.12
-    - paver
-    - pip
-    - platformio-framework-arduinoavr >=1.136.0
-    #: .. versionchanged:: 0.12
-    - platformio-helpers >=0.10
-    - platformio-tool-scons
-    - platformio-toolchain-atmelavr
+    - python >=3.8
+    - base-node
     - pytables
-    - python 2.7*
-    - serial-device >=0.7
+    - platformio
+    - base-node-rpc
+    - nanopb-helpers
+    - dropbot-headers
+    - platformio-helpers
+    - serial-device
+    - pip
 
 test:
   imports:
-    - hv_switching_board
-  commands:
-    - python -m hv_switching_board.bin.upload -h
+    - {{ MODULE_NAME }}
 
 about:
-  home: https://github.com/wheeler-microfluidics/hv-switching-board
+  home: https://github.com/sci-bots/{{ PKG_NAME }}
   license: MIT
+  summary: Arduino-based high-voltage switching board firmware and Python API.
+
+# source will be downloaded prior to filling in jinja templates
+# Example assumes that this folder has setup.py in it
+source:
+#  git_url: ../
+  path: ..

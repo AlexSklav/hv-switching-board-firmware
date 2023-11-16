@@ -1,6 +1,5 @@
 dist/
 docs/
-setup.py
 Config.h
 .sconsign.dblite
 build/
@@ -12,4 +11,5 @@ paver-minilib.zip
 .idea
 *.pyc
 .pioenvs/
+.pio
 notebooks/.ipynb_checkpoints/

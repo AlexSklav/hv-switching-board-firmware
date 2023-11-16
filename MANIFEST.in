@@ -1,8 +1,10 @@
 include README.md
-include pavement.py
-include paver-minilib.zip
+include build_flags.py
+include file_handler.py
 include setup.py
 recursive-include hv_switching_board *
 prune *.pyc
 include versioneer.py
 include hv_switching_board/_version.py
+exclude .DS_Store
+recursive-exclude hv_switching_board .DS_Store

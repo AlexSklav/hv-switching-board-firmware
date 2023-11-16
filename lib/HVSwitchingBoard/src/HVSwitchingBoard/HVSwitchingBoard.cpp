@@ -1,4 +1,3 @@
-#include <algorithm>
 #include "HVSwitchingBoard.h"
 #include "Config.h"
 
@@ -12,7 +11,7 @@ const char BaseNode::PROTOCOL_VERSION_[] PROGMEM = "0.1";
 const char BaseNode::MANUFACTURER_[] PROGMEM = "Wheeler Microfluidics Lab";
 const char BaseNode::NAME_[] PROGMEM = "HV Switching Board";
 const char BaseNode::HARDWARE_VERSION_[] PROGMEM = ___HARDWARE_VERSION___;
-const char BaseNode::SOFTWARE_VERSION_[] PROGMEM = ___SOFTWARE_VERSION___;
+//const char BaseNode::SOFTWARE_VERSION_[] PROGMEM = ___SOFTWARE_VERSION___;
 const char BaseNode::URL_[] PROGMEM = "http://microfluidics.utoronto.ca/dropbot";
 
 HVSwitchingBoardClass::HVSwitchingBoardClass() {}
@@ -47,7 +46,7 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
   digitalWrite(OE, LOW);
 
   // Initialize channel states
-  state_of_channels_.fill(0);
+  memset(state_of_channels_, 0, sizeof(state_of_channels_));
   update_all_channels();
 
   // set the i2c clock
@@ -70,7 +69,7 @@ void HVSwitchingBoardClass::process_wire_command() {
   return_code_ = RETURN_UNKNOWN_COMMAND;
   uint8_t register_addr = cmd_ & B00111111;
   bool auto_increment = (1 << 7) & cmd_;
-  uint8_t port;
+//  uint8_t port;   // unused variable
 
   if ((register_addr >= PCA9505_CONFIG_IO_REGISTER_) &&
       (register_addr <= PCA9505_CONFIG_IO_REGISTER_ + 4)) {
@@ -99,7 +98,7 @@ void HVSwitchingBoardClass::process_wire_command() {
         break;
       case CMD_SET_GENERAL_CALL_ENABLED:
         {
-          const uint8_t general_call_enabled = read<uint8_t>();
+          const uint8_t general_call_enabled = read<uint16_t>();
           general_call(general_call_enabled);
         }
         return_code_ = RETURN_OK;

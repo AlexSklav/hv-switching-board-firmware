@@ -39,9 +39,9 @@ options(
 
 @task
 def create_config():
-    import hv_switching_board
-    lib_directory = path(hv_switching_board.get_lib_directory())
-    sketch_directory = path(hv_switching_board.get_sketch_directory())
+    from hv_switching_board import get_lib_directory, get_sketch_directory
+    lib_directory = path(get_lib_directory())
+    sketch_directory = path(get_sketch_directory())
     (sketch_directory.joinpath('Config.h.skeleton')
      .copy(lib_directory.joinpath('src', 'HVSwitchingBoard', 'Config.h')))
 

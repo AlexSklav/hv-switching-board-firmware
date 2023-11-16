@@ -9,7 +9,7 @@ class GitError(Exception):
     pass
 
 
-class GitUtil(object):
+class GitUtil:
     def __init__(self, root_path='.'):
         self.root_path = path(root_path)
         if root_path is None:
@@ -47,7 +47,7 @@ class GitUtil(object):
                 valid_cmd = True
                 break
         if not valid_cmd:
-            raise GitError, 'No valid git command found'
+            raise GitError('No valid git command found')
         self._git = cmd
         return self._git
 
