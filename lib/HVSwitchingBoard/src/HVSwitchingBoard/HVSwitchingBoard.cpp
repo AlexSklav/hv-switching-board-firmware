@@ -8,11 +8,11 @@ HVSwitchingBoardClass HVSwitchingBoard;
 
 const char BaseNode::PROTOCOL_NAME_[] PROGMEM = "Extension module protocol";
 const char BaseNode::PROTOCOL_VERSION_[] PROGMEM = "0.1";
-const char BaseNode::MANUFACTURER_[] PROGMEM = "Wheeler Microfluidics Lab";
+const char BaseNode::MANUFACTURER_[] PROGMEM = "Sci-bots Inc.";
 const char BaseNode::NAME_[] PROGMEM = "HV Switching Board";
 const char BaseNode::HARDWARE_VERSION_[] PROGMEM = ___HARDWARE_VERSION___;
-//const char BaseNode::SOFTWARE_VERSION_[] PROGMEM = ___SOFTWARE_VERSION___;
-const char BaseNode::URL_[] PROGMEM = "http://microfluidics.utoronto.ca/dropbot";
+const char BaseNode::SOFTWARE_VERSION_[] PROGMEM = ___SOFTWARE_VERSION___;
+const char BaseNode::URL_[] PROGMEM = "https://github.com/sci-bots/dropbot";
 
 HVSwitchingBoardClass::HVSwitchingBoardClass() {}
 
