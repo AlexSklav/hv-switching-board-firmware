@@ -29,8 +29,9 @@ requirements:
     - path-helpers
     - nanopb-helpers
     - dropbot-headers
-    - platformio-helpers
+    - platformio-helpers >=0.10.5
     - serial-device
+    - intelhex
     - pip
 
   run:
@@ -41,8 +42,9 @@ requirements:
     - base-node-rpc
     - nanopb-helpers
     - dropbot-headers
-    - platformio-helpers
+    - platformio-helpers >=0.10.5
     - serial-device
+    - intelhex
     - pip
 
 test:

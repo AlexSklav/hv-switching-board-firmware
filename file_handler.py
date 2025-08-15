@@ -78,6 +78,10 @@ def copy_compiled_firmware(**kwargs) -> None:
     pio_bin_dir.makedirs(exist_ok=True)
 
     src_dir.joinpath('platformio.ini').copy2(pio_bin_dir.joinpath('platformio.ini'))
+    # Copy the site_scons directory to the parent directory
+    target_dir = pio_bin_dir.joinpath('site_scons', 'targets.py')
+    target_dir.parent.makedirs(exist_ok=True)
+    src_dir.joinpath('site_scons', 'targets.py').copy2(target_dir)
 
     for pio_platform in PLATFORMIO_ENVS:
         hex_dir = pio_bin_dir.joinpath(pio_platform)
