@@ -14,3 +14,6 @@
 #ifndef ___SOFTWARE_VERSION___
   #define ___SOFTWARE_VERSION___ "0.2"
 #endif
+#ifndef ___SHIFT_REGISTER_COUNT___
+    #define ___SHIFT_REGISTER_COUNT___ 5
+#endif

@@ -91,14 +91,14 @@ def copy_compiled_firmware(**kwargs) -> None:
         src.copy2(dest)
 
 
-# def create_config(**kwargs) -> None:
-#     source_dir = kwargs.get('source_dir')
-#     lib_name = kwargs.get('lib_name')
-#     source_path = path(source_dir).joinpath('src', 'Config.h.skeleton')
-#     target_path = path(source_dir).joinpath('lib', lib_name, 'src', 'HVSwitchingBoard', 'Config.h')
-#     if target_path.exists():
-#         target_path.remove()
-#     source_path.copy2(target_path)
+def create_config(**kwargs) -> None:
+    source_dir = kwargs.get('source_dir')
+    lib_name = kwargs.get('lib_name')
+    source_path = path(source_dir).joinpath('src', 'Config.h.skeleton')
+    target_path = path(source_dir).joinpath('lib', lib_name, 'src', 'HVSwitchingBoard', 'Config.h')
+    if target_path.exists():
+        target_path.remove()
+    source_path.copy2(target_path)
 
 
 def cli_parser():
@@ -118,7 +118,7 @@ def execute(**kwargs):
     top = '>' * 180
     print(top)
 
-    # create_config(**kwargs)
+    create_config(**kwargs)
     transfer(**kwargs)
     try:
         # Set up environment with PLATFORMIO_LIB_EXTRA_DIRS
