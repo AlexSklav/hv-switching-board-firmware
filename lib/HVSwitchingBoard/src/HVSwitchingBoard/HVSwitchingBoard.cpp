@@ -31,8 +31,8 @@ void HVSwitchingBoardClass::begin(uint32_t baud_rate) {
   pinMode(S_SS, OUTPUT);
   pinMode(S_SCK, OUTPUT);
   pinMode(S_MOSI, OUTPUT);
-#elif ___HARDWARE_MAJOR_VERSION___==3
-  // Version 3 hardware uses **hardware** SPI.
+#elif ___HARDWARE_MAJOR_VERSION___>=3
+  // Version 3+ hardware uses **hardware** SPI.
   pinMode(SS_595, OUTPUT);
   digitalWrite(SS_595, HIGH);
 
@@ -72,13 +72,13 @@ void HVSwitchingBoardClass::process_wire_command() {
 //  uint8_t port;   // unused variable
 
   if ((register_addr >= PCA9505_CONFIG_IO_REGISTER_) &&
-      (register_addr <= PCA9505_CONFIG_IO_REGISTER_ + 4)) {
+      (register_addr <= PCA9505_CONFIG_IO_REGISTER_ + SHIFT_REGISTER_COUNT - 1)) {
     // Emulate the PCA9505 config io registers (used by the control board to
     // determine the chip type)
     port_operation(config_io_register_, register_addr -
                    PCA9505_CONFIG_IO_REGISTER_, auto_increment);
   } else if ((register_addr >= PCA9505_OUTPUT_PORT_REGISTER_) &&
-             (register_addr <= PCA9505_OUTPUT_PORT_REGISTER_ + 4)) {
+             (register_addr <= PCA9505_OUTPUT_PORT_REGISTER_ + SHIFT_REGISTER_COUNT - 1)) {
     // Emulate the PCA9505 output registers.
     if (port_operation(state_of_channels_, register_addr -
                        PCA9505_OUTPUT_PORT_REGISTER_, auto_increment,
@@ -100,6 +100,13 @@ void HVSwitchingBoardClass::process_wire_command() {
         {
           const uint8_t general_call_enabled = read<uint16_t>();
           general_call(general_call_enabled);
+        }
+        return_code_ = RETURN_OK;
+        break;
+      case CMD_GET_SHIFT_REGISTER_COUNT:
+        {
+          const uint8_t shift_register_count = SHIFT_REGISTER_COUNT;
+          serialize(&shift_register_count, sizeof(shift_register_count));
         }
         return_code_ = RETURN_OK;
         break;
@@ -133,7 +140,7 @@ bool HVSwitchingBoardClass::process_serial_input() {
   }
 
   if (match_function(P("state_of_all_channels()"))) {
-    for (uint8_t i = 0; i < 5; i++) {
+    for (uint8_t i = 0; i < SHIFT_REGISTER_COUNT; i++) {
       Serial.println("state_of_channels_[" + String(i) + "]=" + String(state_of_channels_[i]));
     }
     return true;
@@ -153,13 +160,15 @@ void HVSwitchingBoardClass::update_all_channels() {
   /*
    * .. versionchanged:: 0.9
    *    Support both hardware major versions 2 and 3.
+   * .. versionchanged:: 4.1
+   *    Use dynamic shift register count.
    */
-  const uint8_t port_count = 5;
+  const uint8_t port_count = SHIFT_REGISTER_COUNT;
 #if ___HARDWARE_MAJOR_VERSION___==2
   // Version 2 hardware uses **software** SPI.
   const uint8_t spi_chip_select_pin = S_SS;
-#elif ___HARDWARE_MAJOR_VERSION___==3
-  // Version 3 hardware uses **hardware** SPI.
+#elif ___HARDWARE_MAJOR_VERSION___>=3
+  // Version 3+ hardware uses **hardware** SPI.
   const uint8_t spi_chip_select_pin = SS_595;
 #endif
 
@@ -169,10 +178,10 @@ void HVSwitchingBoardClass::update_all_channels() {
   for (uint8_t i = 0; i < port_count; i++) {
 #if ___HARDWARE_MAJOR_VERSION___==2
   // Version 2 hardware uses **software** SPI.
-    shiftOutFast(S_MOSI, S_SCK, MSBFIRST, state_of_channels_[4 - i]);
-#elif ___HARDWARE_MAJOR_VERSION___==3
-  // Version 3 hardware uses **hardware** SPI.
-    SPI.transfer(state_of_channels_[4 - i]);
+    shiftOutFast(S_MOSI, S_SCK, MSBFIRST, state_of_channels_[port_count - 1 - i]);
+#elif ___HARDWARE_MAJOR_VERSION___>=3
+  // Version 3+ hardware uses **hardware** SPI.
+    SPI.transfer(state_of_channels_[port_count - 1 - i]);
 #endif
   }
   // Release PCA9505 chips for SPI access.

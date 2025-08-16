@@ -7,11 +7,12 @@
 #define ___HV_SWITCHING_BOARD__H___
 
 #include <avr/wdt.h>
-#if ___HARDWARE_MAJOR_VERSION___==3
-  // Version 3 hardware uses **hardware** SPI.
+#if ___HARDWARE_MAJOR_VERSION___>=3
+  // Version 3+ hardware uses **hardware** SPI.
 #include <SPI.h>
 #endif
 #include <BaseNode.h>
+#include "Config.h"
 
 #ifndef HV_SWITCHING_BOARD_BAUD_RATE
 /*
@@ -35,6 +36,8 @@
 
 class HVSwitchingBoardClass : public BaseNode {
 public:
+  //! Number of shift registers/ports (configurable at build time)
+  static constexpr uint8_t SHIFT_REGISTER_COUNT = ___SHIFT_REGISTER_COUNT___;
   //! PCA9505 (gpio) chip **configuration** register address (for emulation)
   static constexpr uint8_t PCA9505_CONFIG_IO_REGISTER_ = 0x18;
   //! PCA9505 (gpio) chip **output** register address (for emulation)
@@ -53,6 +56,12 @@ public:
     * @brief Get current broadcast receiving setting.
     */
   static constexpr uint8_t CMD_GET_GENERAL_CALL_ENABLED = 0xA5;
+  /**
+   * @brief Get number of shift registers supported by this board.
+   * 
+   * @since **4.1**: Support configurable shift register count.
+   */
+  static constexpr uint8_t CMD_GET_SHIFT_REGISTER_COUNT = 0xA6;
 
   // digital pins
   static constexpr uint8_t OE = 8;
@@ -62,8 +71,8 @@ public:
   static const uint8_t S_SS = 3;
   static const uint8_t S_SCK = 4;
   static const uint8_t S_MOSI = 5;
-#elif ___HARDWARE_MAJOR_VERSION___==3
-  // Version 3 hardware uses **hardware** SPI.
+#elif ___HARDWARE_MAJOR_VERSION___>=3
+  // Version 3+ hardware uses **hardware** SPI.
   static const uint8_t SS_595 = 3;
 #endif
 
@@ -84,6 +93,7 @@ public:
    * @since **0.8**: Add \link CMD_REBOOT reboot command\endlink.
    * @since **0.10**: Add \link CMD_RESET_CONFIG command to reset configuration\endlink.
    * @since **0.12**: Add **I2C broadcast** receiving \link CMD_GET_GENERAL_CALL_ENABLED **getter**\endlink and
+   * @since **0.17**: Add **I2C broadcast** receiving \link CMD_GET_SHIFT_REGISTER_COUNT **getter**\endlink and
    *   \link CMD_SET_GENERAL_CALL_ENABLED **setter**\endlink commands.
    *
    * ## Commands
@@ -100,6 +110,7 @@ public:
    * | `[#CMD_RESET_CONFIG]`                        | Reset config to default             | N/A                       |
    * | `[#CMD_SET_GENERAL_CALL_ENABLED, v]`         | Receive I2C broadcasts if `v`       | N/A                       |
    * | `[#CMD_GET_GENERAL_CALL_ENABLED, v]`         | N/A                                 | `[<receiving broadcasts]` |
+   * | `[#CMD_GET_SHIFT_REGISTER_COUNT]`            | N/A                                 | `[<shift register count>]`|
    *
    * @return `true` if a request was processed.
    */
@@ -144,9 +155,9 @@ private:
    */
   void update_all_channels();
   //! Requested state of channels (packed, one bit per channel).
-  uint8_t state_of_channels_[5];
+  uint8_t state_of_channels_[SHIFT_REGISTER_COUNT];
   //! Configuration registers to emulate PCA9505 protocol.
-  uint8_t config_io_register_[5];
+  uint8_t config_io_register_[SHIFT_REGISTER_COUNT];
 
   /**
    * @brief **Read/write operation** to/from one or more register ports
@@ -185,7 +196,7 @@ private:
       ports[port] = (invert) ? ~value : value;
       serialize(&value, 1);
       return 1;
-    } else if (auto_increment && (port + payload_length_ <= 5)) {
+    } else if (auto_increment && (port + payload_length_ <= SHIFT_REGISTER_COUNT)) {
       // Auto-increment was specified.
       // Sequentially write to consecutive ports, one byte at a time, starting
       // at the first byte in the payload and continue until the last byte in

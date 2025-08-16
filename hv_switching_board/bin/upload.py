@@ -8,7 +8,7 @@ if __name__ == '__main__':
                            .joinpath('hv-switching-board').dirs()])
     parser = ArgumentParser(description='Upload firmware to board.')
     parser.add_argument('-p', '--port', default=None)
-    parser.add_argument('-b', '--hardware-version', default=environments[-1], choices=environments)
+    parser.add_argument('-b', '--hardware-version', default='v3_1', choices=environments)
     parser.add_argument('-e', '--eeprom', action='store_true',
                         help='If set, program EEPROM instead of flashing firmware.')
     args = parser.parse_args()

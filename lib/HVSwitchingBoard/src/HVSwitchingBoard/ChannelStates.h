@@ -1,6 +1,8 @@
 #ifndef ___CHANNEL_STATES__H___
 #define ___CHANNEL_STATES__H___
 
+#include "Config.h"
+
 #ifndef bitRead
 #define bitRead(b, i)  ((b >> i) & 0x0001)
 #endif
@@ -9,7 +11,7 @@
 #endif
 
 
-template <uint8_t NSwitchPorts>
+template <uint8_t NSwitchPorts = ___SHIFT_REGISTER_COUNT___>
 struct WindowChannelStates {
   static const uint8_t N_SWITCH_PORTS = NSwitchPorts;
   static const uint8_t N_CHANNELS = 8 * N_SWITCH_PORTS;
@@ -132,5 +134,8 @@ struct WindowChannelStates {
     }
   }
 };
+
+// Type alias for default configuration
+using DefaultChannelStates = WindowChannelStates<___SHIFT_REGISTER_COUNT___>;
 
 #endif  // #ifndef ___CHANNEL_STATES__H___

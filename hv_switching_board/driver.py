@@ -16,20 +16,28 @@ CMD_SET_STATE_OF_ALL_CHANNELS = 0xA0
 CMD_GET_STATE_OF_ALL_CHANNELS = 0xA1
 CMD_REBOOT = 0xA2
 CMD_RESET_CONFIG = 0xA3
+CMD_GET_SHIFT_REGISTER_COUNT = 0xA6
 
 
 class HVSwitchingBoard(BaseNode):
-    def __init__(self, proxy: Proxy, address: int, bootloader_address: Optional[int] = 0x29):
+    def __init__(self, proxy: Proxy, address: int,
+                 bootloader_address: Optional[int] = 0x29,
+                 shift_register_count: int = 5):
         """
         Parameters
         ----------
         proxy : base_node_rpc.Proxy
         address : int
             I2C address of switching board.
+        bootloader_address : int, optional
+            I2C address of bootloader (default: 0x29).
+        shift_register_count : int, optional
+            Number of shift registers on the board (default: 5).
         """
         BaseNode.__init__(self, proxy, address)
         self.bootloader_address = bootloader_address
         self.bootloader = TwiBootloader(self.proxy, self.bootloader_address)
+        self.shift_register_count = shift_register_count
 
     def set_i2c_address(self, address: int) -> None:
         """
@@ -61,6 +69,22 @@ class HVSwitchingBoard(BaseNode):
         """
         self.proxy.i2c_write(self.address, [CMD_RESET_CONFIG])
         self.address = 10
+
+    def get_shift_register_count(self) -> int:
+        """
+        Query the number of shift registers supported by this board.
+
+        Returns
+        -------
+        int
+            Number of shift registers available on this board.
+
+        .. versionadded:: 4.1
+        """
+        response = self.proxy.i2c_write(self.address, [CMD_GET_SHIFT_REGISTER_COUNT])
+        if response and len(response) > 0:
+            return response[0]
+        return 5  # Default fallback for older firmware
 
     def read_config(self) -> CONFIG_DTYPE:
         """
@@ -97,17 +121,18 @@ class HVSwitchingBoard(BaseNode):
             time.sleep(1. / 200)
 
     def set_state_of_all_channels(self, state: Union[List, np.array]) -> None:
-        data = np.array([0] * 5, dtype=np.uint8)
+        data = np.array([0] * self.shift_register_count, dtype=np.uint8)
         for i in range(len(state)):
-            data[i / 8] |= (state[i] << i % 8)
-        for i in range(5):
+            data[i // 8] |= (state[i] << (i % 8))
+        for i in range(self.shift_register_count):
             self.serialize_uint8(~data[i])
         self.send_command(CMD_SET_STATE_OF_ALL_CHANNELS)
 
     def state_of_all_channels(self) -> np.array:
         self.data = []
         self.send_command(CMD_GET_STATE_OF_ALL_CHANNELS)
-        state = np.zeros(40, dtype=np.uint8)
+        total_channels = self.shift_register_count * 8
+        state = np.zeros(total_channels, dtype=np.uint8)
         for i in range(len(state)):
-            state[i] = self.data[int(i / 8)] & (0x01 << i % 8) == 0
+            state[i] = self.data[i // 8] & (0x01 << (i % 8)) == 0
         return state
