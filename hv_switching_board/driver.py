@@ -107,7 +107,7 @@ class HVSwitchingBoard(BaseNode):
         config : base_node.driver.CONFIG_DTYPE
             Switching board configuration as a `numpy` type.
         """
-        self.bootloader.write_eeprom(0, map(ord, config.tobytes()))
+        self.bootloader.write_eeprom(0, list(config.tobytes()))
 
     def reboot_recovery(self) -> None:
         self.proxy.i2c_write(self.address, CMD_REBOOT)

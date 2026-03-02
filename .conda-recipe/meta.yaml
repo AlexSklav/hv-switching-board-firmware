@@ -21,6 +21,7 @@ build:
 requirements:
   build:
     - python >=3.6
+    - setuptools
     - numpy
     - base-node >=0.16.4
     - pytables

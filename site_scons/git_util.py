@@ -54,8 +54,8 @@ class GitUtil:
 
     def command(self, x):
         try:
-            x.__iter__
-        except:
+            iter(x)
+        except TypeError:
             x = re.split(r'\s+', x)
         cwd = os.getcwd()
 

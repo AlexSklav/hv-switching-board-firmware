@@ -38,10 +38,10 @@ Export('PYTHON_LIB', 'PYTHON_LIB_PATH', 'PYTHON_INC_PATH')
 
 if __name__ == '__main__':
     if os.name == 'nt':
-        print get_boost_lib_path()
+        print(get_boost_lib_path())
 
-    print get_python_path()
+    print(get_python_path())
     arduino_path, avrdude, avrdude_conf = get_arduino_paths()
-    print 'found arduino path:', arduino_path
-    print 'using newest avrdude:', avrdude
-    print 'using avrdude config:', avrdude_conf
+    print('found arduino path:', arduino_path)
+    print('using newest avrdude:', avrdude)
+    print('using avrdude config:', avrdude_conf)

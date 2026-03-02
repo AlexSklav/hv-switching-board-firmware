@@ -44,7 +44,7 @@ def get_includes() -> List[path]:
 
         import hv_switching_board
         ...
-        print ' '.join(['-I%s' % i for i in hv_switching_board.get_includes()])
+        print(' '.join(['-I%s' % i for i in hv_switching_board.get_includes()]))
         ...
 
     """
@@ -66,7 +66,7 @@ def get_sources() -> List[path]:
 
         import hv_switching_board
         ...
-        print ' '.join(hv_switching_board.get_sources())
+        print(' '.join(hv_switching_board.get_sources()))
         ...
 
     """
