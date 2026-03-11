@@ -34,7 +34,7 @@ class HVSwitchingBoard(BaseNode):
         shift_register_count : int, optional
             Number of shift registers on the board (default: 5).
         """
-        BaseNode.__init__(self, proxy, address)
+        super().__init__(proxy, address)
         self.bootloader_address = bootloader_address
         self.bootloader = TwiBootloader(self.proxy, self.bootloader_address)
         self.shift_register_count = shift_register_count
@@ -122,8 +122,10 @@ class HVSwitchingBoard(BaseNode):
                 logger.debug(f'Found device at {self.bootloader_address}')
                 self.bootloader.abort_boot_timeout()
                 logger.debug('Aborted timeout to stay in bootloader')
-                break
+                return
             time.sleep(1. / 200)
+        raise IOError(f"Bootloader at {self.bootloader_address} did not "
+                      f"appear after rebooting board at {self.address}")
 
     def set_state_of_all_channels(self, state: Union[List, np.array]) -> None:
         data = np.array([0] * self.shift_register_count, dtype=np.uint8)
