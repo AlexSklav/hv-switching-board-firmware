@@ -81,9 +81,9 @@ class HVSwitchingBoard(BaseNode):
 
         .. versionadded:: 4.1
         """
-        response = self.proxy.i2c_write(self.address, [CMD_GET_SHIFT_REGISTER_COUNT])
-        if response and len(response) > 0:
-            return response[0]
+        self.send_command(CMD_GET_SHIFT_REGISTER_COUNT)
+        if self.data:
+            return self.read_uint8()
         return 5  # Default fallback for older firmware
 
     def read_config(self) -> CONFIG_DTYPE:
