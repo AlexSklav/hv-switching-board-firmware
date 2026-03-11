@@ -96,7 +96,12 @@ class HVSwitchingBoard(BaseNode):
             Switching board configuration as a `numpy` type.
         """
         config_str = self.bootloader.read_eeprom(0, CONFIG_DTYPE.itemsize)
-        return np.frombuffer(config_str, dtype=CONFIG_DTYPE)[0]
+        if len(config_str) < CONFIG_DTYPE.itemsize:
+            raise IOError(f"EEPROM read returned {len(config_str)} bytes, "
+                          f"expected {CONFIG_DTYPE.itemsize} — "
+                          f"bootloader at {self.bootloader_address} may not "
+                          f"be responding")
+        return np.frombuffer(config_str, dtype=CONFIG_DTYPE).copy()[0]
 
     def write_config(self, config: CONFIG_DTYPE) -> None:
         """
